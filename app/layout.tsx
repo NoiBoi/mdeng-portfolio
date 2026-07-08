@@ -3,6 +3,7 @@ import Script from "next/script";
 import "@/app/globals.css";
 import { SiteHeader } from "@/components/SiteHeader";
 import { siteConfig } from "@/data/site";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Matthew Deng | Mechanical Engineering Portfolio",
@@ -35,6 +36,7 @@ export default function RootLayout({
         </Script>
         <SiteHeader />
         {children}
+	<Analytics />
       </body>
     </html>
   );
