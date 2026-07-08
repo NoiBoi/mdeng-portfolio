@@ -73,12 +73,6 @@ export default function Home() {
               </div>
             </div>
           </Reveal>
-          <Reveal className="about-sketch" delay={120}>
-            <p className="font-mono text-[0.64rem] font-bold uppercase text-dim">
-              Optional / Original engineering sketch or notebook page
-            </p>
-            <div className="mt-auto h-px w-full bg-white/10" />
-          </Reveal>
         </div>
       </section>
 
@@ -100,19 +94,9 @@ export default function Home() {
             <a href={`mailto:${siteConfig.email}`} className="button-secondary">
               Email
             </a>
-            {siteConfig.resumeAvailable ? (
-              <a href={siteConfig.resumeHref} download className="button-primary">
-                Resume PDF
-              </a>
-            ) : (
-              <button
-                disabled
-                className="button-secondary cursor-not-allowed opacity-55"
-                aria-label="Resume PDF will be available after public/resume.pdf is added"
-              >
-                Resume PDF
-              </button>
-            )}
+            <a href={siteConfig.resumeInquiryHref} className="button-primary">
+              Request resume
+            </a>
           </Reveal>
         </div>
       </section>

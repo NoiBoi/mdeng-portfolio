@@ -55,24 +55,12 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
-          {siteConfig.resumeAvailable ? (
-            <a
-              href={siteConfig.resumeHref}
-              download
-              className="text-sm font-semibold text-muted transition-colors hover:text-paper focus-visible:focus-ring"
-            >
-              Resume
-            </a>
-          ) : (
-            <button
-              className="cursor-not-allowed text-sm font-semibold text-dim"
-              disabled
-              aria-label="Resume PDF will be available after public/resume.pdf is added"
-              title="Resume PDF will be added later"
-            >
-              Resume
-            </button>
-          )}
+          <a
+            href={siteConfig.resumeInquiryHref}
+            className="text-sm font-semibold text-muted transition-colors hover:text-paper focus-visible:focus-ring"
+          >
+            Resume
+          </a>
         </div>
       </nav>
     </header>

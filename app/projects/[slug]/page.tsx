@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { ProjectMedia } from "@/components/ProjectMedia";
 import { Reveal } from "@/components/Reveal";
 import { getProject, projects } from "@/data/projects";
@@ -135,15 +134,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               );
             })}
           </div>
-        ) : (
-          <div className="mt-12 grid gap-5 md:grid-cols-2">
-            {project.mediaLabels.map((label, index) => (
-              <Reveal key={label} delay={index * 80}>
-                <MediaPlaceholder label={label} aspect={index === 0 ? "wide" : "square"} />
-              </Reveal>
-            ))}
-          </div>
-        )}
+        ) : null}
 
         <div className="mt-16 grid gap-10 border-t border-white/10 pt-12 lg:grid-cols-[0.8fr_1.2fr]">
           <Reveal>

@@ -173,7 +173,7 @@ export function LynxHero() {
     !reducedMotion && displayProgress > 0.52 && displayProgress < 0.92;
 
   const planeGeometry = useMemo(() => {
-    const startWidth = Math.min(viewport.width * 0.62, 980);
+    const startWidth = Math.min(viewport.width * 0.56, 900);
     const startHeight = startWidth / 1.45;
     const pageInset = Math.max(-18, (viewport.width - 1500) / 2 - 8);
     const startLeft = viewport.width - pageInset - startWidth;
@@ -259,19 +259,9 @@ export function LynxHero() {
             <a href="#work" className="button-primary">
               Explore selected work
             </a>
-            {siteConfig.resumeAvailable ? (
-              <a href={siteConfig.resumeHref} download className="button-secondary">
-                View resume
-              </a>
-            ) : (
-              <button
-                disabled
-                className="button-secondary cursor-not-allowed opacity-55"
-                aria-label="Resume PDF will be available after public/resume.pdf is added"
-              >
-                View resume
-              </button>
-            )}
+            <a href={siteConfig.resumeInquiryHref} className="button-secondary">
+              Request resume
+            </a>
           </div>
         </div>
 

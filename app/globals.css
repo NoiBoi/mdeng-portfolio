@@ -300,7 +300,7 @@ body {
   z-index: 3;
   left: max(1.25rem, calc((100vw - 1500px) / 2 + 2rem));
   top: 14vh;
-  width: min(34rem, 32vw);
+  width: min(31rem, 30vw);
   opacity: var(--intro-opacity);
   transform: translate3d(0, var(--intro-y), 0);
   pointer-events: auto;
@@ -343,21 +343,19 @@ body {
   margin-top: 1.05rem;
   color: rgb(237 232 223 / 0.72);
   display: block;
-  width: 145%;
+  width: 100%;
   font-family: Haettenschweiler, Impact, "Arial Narrow", "Bahnschrift Condensed", var(--font-sans);
-  font-size: clamp(4.8rem, 8.9vw, 9.4rem);
+  font-size: clamp(4.6rem, 8.1vw, 8.8rem);
   font-weight: 400;
-  line-height: 0.8;
+  line-height: 0.82;
   letter-spacing: 0.018em;
   text-transform: uppercase;
-  scale: 0.68 1;
-  transform-origin: left center;
 }
 
 .hero-copy h1 {
-  max-width: min(28rem, 100%);
+  max-width: min(25rem, 100%);
   margin-top: 1.15rem;
-  font-size: clamp(3.1rem, 4.7vw, 4.25rem);
+  font-size: clamp(3rem, 4.35vw, 4.05rem);
 }
 
 @keyframes hero-reveal {
@@ -627,20 +625,9 @@ body {
   line-height: 1.7;
 }
 
-.about-sketch {
-  min-height: 16rem;
-  border: 1px solid rgb(255 255 255 / 0.08);
-  background:
-    linear-gradient(135deg, rgb(255 255 255 / 0.025), transparent 42%),
-    rgb(255 255 255 / 0.012);
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-}
-
 @media (min-width: 1024px) {
   .about-grid {
-    grid-template-columns: 0.24fr 1fr 0.42fr;
+    grid-template-columns: 0.24fr 1fr;
     align-items: start;
   }
 

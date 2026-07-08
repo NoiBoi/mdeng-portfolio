@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { Project } from "@/data/projects";
-import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { ProjectMedia } from "@/components/ProjectMedia";
 import { Reveal } from "@/components/Reveal";
 
@@ -19,9 +18,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
         <article className="flex h-full flex-col py-5">
           {project.cardMedia ? (
             <ProjectMedia media={project.cardMedia} aspect="wide" className="project-card-media" />
-          ) : (
-            <MediaPlaceholder label={project.mediaLabels[0]} aspect="wide" />
-          )}
+          ) : null}
           <div className="flex flex-1 flex-col pt-5">
             <div className="flex items-start justify-between gap-4">
               <p className="font-mono text-[0.64rem] font-bold uppercase text-muted">

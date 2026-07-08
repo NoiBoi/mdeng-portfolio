@@ -1,20 +1,6 @@
-import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { Reveal } from "@/components/Reveal";
 import { SectionHeading } from "@/components/SectionHeading";
 import type { ReactNode } from "react";
-
-const anasoriMedia = [
-  "Materials Processing Flow",
-  "XRD / Characterization Figure",
-  "Fixture Drawing Detail",
-  "Research Notebook Excerpt"
-];
-
-const cosmologyMedia = [
-  "Research Paper Cover",
-  "Spectrum / Photon-Field Figure",
-  "Equation or Quantitative Comparison"
-];
 
 const anasoriDetails = [
   {
@@ -103,7 +89,7 @@ export function ResearchSection() {
       <SectionHeading
         eyebrow="Research"
         title="Materials processing, research fixtures, and quantitative notebooks."
-        description="A quieter section for academic and independent research work, with placeholders reserved for approved figures and paper assets."
+        description="A quieter section for academic and independent research work, focused on public-safe process notes, theory framing, and approved paper assets."
       />
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
@@ -134,11 +120,6 @@ export function ResearchSection() {
                   ))}
                 </div>
               </section>
-            ))}
-          </div>
-          <div className="mt-7 grid gap-4 sm:grid-cols-2">
-            {anasoriMedia.map((label, index) => (
-              <MediaPlaceholder key={label} label={label} aspect={index === 0 ? "wide" : "square"} />
             ))}
           </div>
         </Reveal>
@@ -176,11 +157,6 @@ export function ResearchSection() {
           >
             Read paper
           </a>
-          <div className="mt-7 grid gap-4">
-            {cosmologyMedia.map((label) => (
-              <MediaPlaceholder key={label} label={label} />
-            ))}
-          </div>
         </Reveal>
       </div>
     </section>
