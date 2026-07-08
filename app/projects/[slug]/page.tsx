@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BackToWorkLink } from "@/components/BackToWorkLink";
 import { ProjectMedia } from "@/components/ProjectMedia";
 import { Reveal } from "@/components/Reveal";
 import { getProject, projects } from "@/data/projects";
@@ -89,9 +89,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   return (
     <main className="min-h-screen pt-28">
       <section className="section-shell !pt-10">
-        <Link href="/#work" className="button-secondary">
-          Back to work
-        </Link>
+        <BackToWorkLink />
 
         <Reveal className="mt-12 max-w-5xl">
           <p className="section-label">{project.category}</p>
@@ -107,12 +105,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         </Reveal>
 
         {project.metrics?.length ? (
-          <Reveal className="mt-12 grid gap-px overflow-hidden border border-white/10 bg-white/10 md:grid-cols-3">
+          <Reveal className="project-metrics-grid mt-12">
             {project.metrics.map((metric) => (
-              <div
-                key={metric}
-                className="bg-graphite-900 p-5 font-mono text-sm font-bold uppercase leading-6 text-paper"
-              >
+              <div key={metric} className="project-metric">
                 {metric}
               </div>
             ))}

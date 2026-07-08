@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { InstantWorkJump } from "@/components/InstantWorkJump";
 import { LynxHero } from "@/components/LynxHero";
 import { ProjectCard } from "@/components/ProjectCard";
 import { ResearchSection } from "@/components/ResearchSection";
@@ -10,6 +11,7 @@ import { siteConfig } from "@/data/site";
 export default function Home() {
   return (
     <main>
+      <InstantWorkJump />
       <LynxHero />
 
       <section id="work" className="section-shell">
@@ -88,7 +90,12 @@ export default function Home() {
             </p>
           </Reveal>
           <Reveal className="flex flex-wrap gap-3 lg:justify-end" delay={100}>
-            <a href={siteConfig.linkedIn} className="button-secondary">
+            <a
+              href={siteConfig.linkedIn}
+              target="_blank"
+              rel="noreferrer"
+              className="button-secondary"
+            >
               LinkedIn
             </a>
             <a href={`mailto:${siteConfig.email}`} className="button-secondary">

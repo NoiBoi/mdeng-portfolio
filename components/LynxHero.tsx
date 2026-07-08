@@ -9,6 +9,7 @@ import {
   useRef,
   useState
 } from "react";
+import { AnimatedWords } from "@/components/AnimatedWords";
 import { siteConfig } from "@/data/site";
 
 type AnnotationId = "electronics" | "leg" | "control" | "frame";
@@ -242,15 +243,20 @@ export function LynxHero() {
 
         <div className="hero-copy" aria-hidden={introOut > 0.96}>
           <p className="hero-reveal section-label">Purdue University</p>
-          <p className="hero-name hero-reveal hero-delay-1">Matthew Deng</p>
+          <p className="hero-name hero-reveal hero-delay-1">
+            <AnimatedWords text="Matthew Deng" />
+          </p>
           <h1
             id="hero-title"
-            className="hero-reveal hero-delay-2 mt-5 text-balance text-5xl font-semibold leading-[1.02] text-paper md:text-6xl xl:text-[4.9rem]"
+            className="hero-title hero-reveal hero-delay-2 mt-5 text-balance text-5xl font-semibold leading-[1.02] text-paper md:text-6xl xl:text-[4.9rem]"
           >
-            Engineering systems from CAD to fabricated hardware.
+            <AnimatedWords text="Engineering systems from CAD to fabricated hardware." startDelay={210} />
           </h1>
           <p className="hero-reveal hero-delay-3 mt-7 max-w-xl text-lg leading-8 text-muted">
-            Robotics, advanced materials, propulsion, and manufacturing at Purdue University.
+            <AnimatedWords
+              text="Robotics, advanced materials, propulsion, and manufacturing at Purdue University."
+              startDelay={430}
+            />
           </p>
           <p className="hero-reveal hero-delay-4 mt-7 max-w-2xl font-mono text-[0.68rem] font-bold uppercase leading-5 text-dim">
             Mechanical Engineering · Artificial Intelligence & Machine Learning Minor · 4.00 GPA

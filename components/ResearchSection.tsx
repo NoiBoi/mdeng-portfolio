@@ -6,25 +6,67 @@ const anasoriDetails = [
   {
     heading: "Research role and scope",
     paragraphs: [
-      "Work combines hands-on MAX/MXene synthesis with mechanical and process-improvement tooling. Public-safe scope includes precursor calculations, powder preparation, HF/HCl etching exposure, molten-salt etching setup, centrifugation washing, filtration, delamination, sample storage, and lab-specific workflow documentation.",
-      "Systems include standard Ti3C2Tx processing exposure as well as nitride, high-entropy, oxycarbide, carbonitride, heavy-metal, and other compositionally complex MAX/MXene workflows."
+      <>
+        Work combines hands-on MAX/MXene synthesis with mechanical and process-improvement
+        tooling in the{" "}
+        <a
+          href="https://www.babakanasori.com/"
+          target="_blank"
+          rel="noreferrer"
+          className="text-paper underline decoration-cyan/45 underline-offset-4 transition-colors hover:text-cyan"
+        >
+          Anasori Lab
+        </a>
+        . Public-safe scope includes precursor calculations, powder preparation, HF/HCl etching
+        exposure, molten-salt etching setup, centrifugation washing, filtration, delamination,
+        sample storage, and lab-specific workflow documentation.
+      </>,
+      <>
+        Systems include standard{" "}
+        <MathInline>
+          Ti<sub>3</sub>C<sub>2</sub>T<sub>x</sub>
+        </MathInline>{" "}
+        processing exposure as well as nitride, high-entropy, oxycarbide, carbonitride,
+        heavy-metal, and other compositionally complex MAX/MXene workflows.
+      </>
     ]
   },
   {
     heading: "TiNbAlN route contribution",
     paragraphs: [
-      "Contributed to TiNbAlN MAX synthesis using an NbN-based precursor route and supported molten-salt etching toward a novel TiNbAlN-derived MXene. Contributions included stoichiometric design, mass-ratio calculations, precursor measurement, mixing, ball-milling preparation, and etching setup.",
+      <>
+        Contributed to <MathInline>TiNbAlN</MathInline> MAX synthesis using an{" "}
+        <MathInline>NbN</MathInline>-based precursor route and supported molten-salt etching
+        toward a novel <MathInline>TiNbAlN</MathInline>-derived MXene. Contributions included
+        stoichiometric design, mass-ratio calculations, precursor measurement, mixing,
+        ball-milling preparation, and etching setup.
+      </>,
       "Annealing and XRD characterization were performed by Dr. Hassan, so the defensible public framing is contribution to the synthesis route and support toward the derived MXene rather than an independent discovery claim."
     ]
   },
   {
     heading: "Processing and tooling",
     paragraphs: [
-      "Developed spreadsheet-based precursor calculations for systems including TiNbAlN, Ti3AlCN, Ti4AlN3, and Nb2AlN, converting target formulas and precursor options into practical batch masses.",
+      <>
+        Developed spreadsheet-based precursor calculations for systems including{" "}
+        <MathInline>TiNbAlN</MathInline>,{" "}
+        <MathInline>
+          Ti<sub>3</sub>AlCN
+        </MathInline>
+        ,{" "}
+        <MathInline>
+          Ti<sub>4</sub>AlN<sub>3</sub>
+        </MathInline>
+        , and{" "}
+        <MathInline>
+          Nb<sub>2</sub>AlN
+        </MathInline>
+        , converting target formulas and precursor options into practical batch masses.
+      </>,
       "Also developed the V-jaw sample-processing fixture path from printed prototypes to a 6061-T6 aluminum design with a 15 deg V-groove, pass-through milling clearance, and a technical drawing produced for fabrication."
     ]
   }
-];
+] satisfies Array<{ heading: string; paragraphs: ReactNode[] }>;
 
 const cosmologyDetails = [
   {

@@ -210,6 +210,33 @@ body {
   }
 }
 
+.word-sequence {
+  display: inline;
+}
+
+.word-reveal {
+  display: inline-block;
+  margin-right: 0.22em;
+  opacity: 0;
+  transform: translate3d(0, 0.58em, 0);
+  filter: blur(5px);
+  animation: word-rise 760ms var(--ease-editorial) forwards;
+  animation-delay: var(--word-delay, 0ms);
+}
+
+.hero-name .word-reveal,
+.hero-title .word-reveal {
+  margin-right: 0.12em;
+}
+
+@keyframes word-rise {
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
+}
+
 .work-drawing-banner {
   position: relative;
   height: clamp(10rem, 15vw, 15rem);
@@ -250,6 +277,49 @@ body {
 .project-gallery {
   display: grid;
   gap: 1.25rem;
+}
+
+.project-metrics-grid {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
+.project-metric {
+  position: relative;
+  min-height: 5.3rem;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background:
+    linear-gradient(135deg, rgb(109 181 205 / 0.08), transparent 36%),
+    linear-gradient(180deg, rgb(255 255 255 / 0.028), transparent),
+    #0b0f10;
+  padding: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.55;
+  text-transform: uppercase;
+  color: var(--paper);
+}
+
+.project-metric::before {
+  content: "";
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  width: 2.4rem;
+  height: 1px;
+  background: rgb(109 181 205 / 0.42);
+}
+
+.project-metric::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgb(109 181 205 / 0.55), transparent 38%);
+  opacity: 0.5;
 }
 
 @media (min-width: 768px) {
@@ -299,7 +369,7 @@ body {
   position: absolute;
   z-index: 3;
   left: max(1.25rem, calc((100vw - 1500px) / 2 + 2rem));
-  top: 14vh;
+  top: clamp(5.5rem, 10vh, 7rem);
   width: min(31rem, 30vw);
   opacity: var(--intro-opacity);
   transform: translate3d(0, var(--intro-y), 0);
@@ -340,12 +410,12 @@ body {
 }
 
 .hero-name {
-  margin-top: 1.05rem;
+  margin-top: 0.85rem;
   color: rgb(237 232 223 / 0.72);
   display: block;
   width: 100%;
   font-family: Haettenschweiler, Impact, "Arial Narrow", "Bahnschrift Condensed", var(--font-sans);
-  font-size: clamp(4.6rem, 8.1vw, 8.8rem);
+  font-size: clamp(4.35rem, 7.7vw, 8.25rem);
   font-weight: 400;
   line-height: 0.82;
   letter-spacing: 0.018em;
@@ -353,9 +423,21 @@ body {
 }
 
 .hero-copy h1 {
-  max-width: min(25rem, 100%);
+  max-width: min(24rem, 100%);
+  margin-top: 0.9rem;
+  font-size: clamp(2.7rem, 4.05vw, 3.8rem);
+}
+
+.hero-copy .hero-delay-3 {
   margin-top: 1.15rem;
-  font-size: clamp(3rem, 4.35vw, 4.05rem);
+}
+
+.hero-copy .hero-delay-4 {
+  margin-top: 1.1rem;
+}
+
+.hero-copy .hero-delay-5 {
+  margin-top: 1.25rem;
 }
 
 @keyframes hero-reveal {
