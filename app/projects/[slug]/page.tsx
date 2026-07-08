@@ -156,11 +156,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 </div>
               </section>
             ))}
-            {project.confidentialityNote ? (
-              <p className="border-l border-cyan/45 pl-5 text-sm leading-6 text-dim">
-                {project.confidentialityNote}
-              </p>
-            ) : null}
           </Reveal>
         </div>
       </section>

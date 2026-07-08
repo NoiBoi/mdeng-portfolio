@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {
   type CSSProperties,
+  type MouseEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -12,10 +13,11 @@ import {
 import { AnimatedWords } from "@/components/AnimatedWords";
 import { siteConfig } from "@/data/site";
 
-type AnnotationId = "electronics" | "leg" | "control" | "frame";
+type AnnotationId = "belt" | "lightweighting" | "motor";
 
 type Hotspot = {
   id: AnnotationId;
+  index: string;
   ariaLabel: string;
   label: string;
   zoneClass: string;
@@ -26,40 +28,34 @@ type Hotspot = {
 
 const hotspots: Hotspot[] = [
   {
-    id: "electronics",
-    ariaLabel: "Inspect custom motor-driver electronics on the front module",
-    label: "CUSTOM MOTOR-DRIVER ELECTRONICS",
-    zoneClass: "left-[17%] top-[45%]",
-    markerClass: "left-[21.25%] top-[49.5%]",
-    annotationClass: "left-[5.8%] top-[42.2%]",
-    leaderPoints: "20.75,49.05 15.8,43.4 5.9,43.4"
+    id: "belt",
+    index: "1",
+    ariaLabel: "Inspect the precise belt-drive stage in the lower leg module",
+    label: "PRECISE BELT DRIVE",
+    zoneClass: "left-[48%] top-[67%]",
+    markerClass: "left-[53.5%] top-[71.5%]",
+    annotationClass: "left-[61.5%] top-[77.8%]",
+    leaderPoints: "54.0,71.1 59.2,77.6 61.6,77.6"
   },
   {
-    id: "leg",
-    ariaLabel: "Inspect modular 12-DOF leg architecture",
-    label: "MODULAR 12-DOF LEG ARCHITECTURE",
-    zoneClass: "left-[55%] top-[51%]",
-    markerClass: "left-[59.25%] top-[55.5%]",
-    annotationClass: "left-[43%] top-[63.6%]",
-    leaderPoints: "58.9,56.1 54.5,63.8 43.2,63.8"
+    id: "lightweighting",
+    index: "2",
+    ariaLabel: "Inspect the generative-design lightweighting structure in the central bracket",
+    label: "GENERATIVE-DESIGN LIGHTWEIGHTING",
+    zoneClass: "left-[43%] top-[37%]",
+    markerClass: "left-[48.25%] top-[43.2%]",
+    annotationClass: "left-[29.6%] top-[48.8%]",
+    leaderPoints: "48.0,43.0 40.6,48.4 29.8,48.4"
   },
   {
-    id: "control",
-    ariaLabel: "Inspect IMU-based balance control area",
-    label: "IMU-BASED BALANCE CONTROL",
-    zoneClass: "left-[54%] top-[33%]",
-    markerClass: "left-[58.25%] top-[37.5%]",
-    annotationClass: "left-[63.2%] top-[29.4%]",
-    leaderPoints: "58.7,36.9 62.2,30.5 63.2,30.5"
-  },
-  {
-    id: "frame",
-    ariaLabel: "Inspect lightweight frame and enclosure development",
-    label: "LIGHTWEIGHT FRAME / ENCLOSURE DEVELOPMENT",
-    zoneClass: "left-[66%] top-[23%]",
-    markerClass: "left-[70.25%] top-[27.5%]",
-    annotationClass: "left-[75.8%] top-[21.8%]",
-    leaderPoints: "70.7,26.9 74.8,22.9 75.8,22.9"
+    id: "motor",
+    index: "3",
+    ariaLabel: "Inspect the compact motor geometry in the upper drive package",
+    label: "COMPACT MOTOR GEOMETRY",
+    zoneClass: "left-[57%] top-[10%]",
+    markerClass: "left-[62.25%] top-[15.2%]",
+    annotationClass: "left-[69.8%] top-[11.4%]",
+    leaderPoints: "62.2,15.0 68.0,11.8 69.9,11.8"
   }
 ];
 
@@ -210,6 +206,18 @@ export function LynxHero() {
     setActiveHotspot(null);
   }, []);
 
+  const handleJumpToWork = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    const root = document.documentElement;
+    const previousBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
+    document.getElementById("work")?.scrollIntoView({ block: "start", behavior: "auto" });
+    window.history.replaceState(null, "", "/#work");
+    window.setTimeout(() => {
+      root.style.scrollBehavior = previousBehavior;
+    }, 80);
+  }, []);
+
   const heroStyle = {
     "--intro-opacity": 1 - introOut,
     "--intro-y": `${introOut * -18}px`,
@@ -259,12 +267,12 @@ export function LynxHero() {
             />
           </p>
           <p className="hero-reveal hero-delay-4 mt-7 max-w-2xl font-mono text-[0.68rem] font-bold uppercase leading-5 text-dim">
-            Mechanical Engineering · Artificial Intelligence & Machine Learning Minor · 4.00 GPA
+            Mechanical Engineering / Artificial Intelligence and Machine Learning Minor / 4.00 GPA
           </p>
           <div className="hero-reveal hero-delay-5 mt-8 flex flex-wrap gap-3">
-            <a href="#work" className="button-primary">
+            <Link href="/#work" onClick={handleJumpToWork} className="button-primary">
               Explore selected work
-            </a>
+            </Link>
             <a href={siteConfig.resumeInquiryHref} className="button-secondary">
               Request resume
             </a>
@@ -279,11 +287,11 @@ export function LynxHero() {
         >
           <div className="hero-image-layer">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={siteConfig.heroMediaSrc} alt="LYNX V1 archival CAD screenshot" />
+            <img src={siteConfig.heroMediaSrc} alt="LYNX Mk.1 leg module render" />
           </div>
           <div className="hero-image-vignette" aria-hidden="true" />
 
-          <p className="hero-archive-label">LYNX V1 / Archive CAD view</p>
+          <p className="hero-archive-label">LYNX MK1 / LEG MODULE RENDER</p>
           <p className="hero-inspect-prompt">Hover components to inspect</p>
 
           <div className="hero-caption" aria-hidden={overlayOpacity < 0.08}>
@@ -304,7 +312,9 @@ export function LynxHero() {
                   activeHotspot === hotspot.id ? "inspection-marker-active" : ""
                 }`}
                 aria-hidden="true"
-              />
+              >
+                <span className="inspection-marker-index">{hotspot.index}</span>
+              </span>
             ))}
             {hotspots.map((hotspot) => (
               <button

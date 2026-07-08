@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "@/app/globals.css";
 import { SiteHeader } from "@/components/SiteHeader";
 import { siteConfig } from "@/data/site";
@@ -22,6 +23,16 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
+        <Script id="hash-scroll-behavior" strategy="beforeInteractive">
+          {`
+            if (window.location.hash) {
+              document.documentElement.style.scrollBehavior = "auto";
+              window.addEventListener("load", function () {
+                document.documentElement.style.scrollBehavior = "";
+              }, { once: true });
+            }
+          `}
+        </Script>
         <SiteHeader />
         {children}
       </body>

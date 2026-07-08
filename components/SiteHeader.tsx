@@ -1,7 +1,8 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { type MouseEvent, useEffect, useState } from "react";
 import { siteConfig } from "@/data/site";
 
 const navItems = [
@@ -13,6 +14,13 @@ const navItems = [
 
 export function SiteHeader() {
   const [showBrand, setShowBrand] = useState(false);
+
+  const handleBrandClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (window.location.pathname !== "/") return;
+    event.preventDefault();
+    window.history.replaceState(null, "", "/");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   useEffect(() => {
     const update = () => {
@@ -39,11 +47,23 @@ export function SiteHeader() {
       >
         <Link
           href="/"
+          onClick={handleBrandClick}
           className={`site-brand font-mono text-xs font-bold uppercase text-paper transition hover:text-cyan focus-visible:focus-ring ${
             showBrand ? "site-brand-visible" : ""
           }`}
         >
-          Matthew Deng
+          <span className="site-brand-lockup">
+            <span className="site-brand-logo">
+              <Image
+                src={siteConfig.purdueLogoSrc}
+                alt=""
+                width={22}
+                height={14}
+                aria-hidden="true"
+              />
+            </span>
+            <span>Matthew Deng</span>
+          </span>
         </Link>
         <div className="flex items-center gap-5 md:gap-8">
           {navItems.map((item) => (

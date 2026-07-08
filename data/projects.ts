@@ -27,19 +27,18 @@ export type Project = {
   galleryLayout?: "standard" | "per" | "pulsejet" | "frc" | "v-jaw";
   details: string[];
   detailSections?: ProjectDetailSection[];
-  confidentialityNote?: string;
   cardSize?: "wide" | "tall" | "standard";
 };
 
 export const projects: Project[] = [
   {
-    title: "LYNX \u2014 Modular 12-DOF Quadruped Robot",
+    title: "LYNX - Modular 12-DOF Quadruped Robot",
     slug: "lynx",
     category: "Robotics",
-    yearStatus: "2023\u2013Present",
+    yearStatus: "2023-Present",
     role: "Founder & Lead Engineer",
     description:
-      "A long-running quadruped robotics testbed evolving from early proof-of-concept hardware into a modular platform for mechanical design, embedded electronics, controls, and iterative manufacturing.",
+      "A quadruped robotics platform for mechanical design, embedded electronics, controls, and iterative manufacturing.",
     tags: [
       "Robotics",
       "CAD",
@@ -107,8 +106,6 @@ export const projects: Project[] = [
         ]
       }
     ],
-    confidentialityNote:
-      "LYNX Mk.1 is in mechanical redesign and electronics integration. Public material is limited to architecture, design process, and validation goals until the integrated platform is fully demonstrated."
   },
   {
     title: "Aluminum V-Jaw Fixture - Materials-Processing Tooling",
@@ -297,7 +294,7 @@ export const projects: Project[] = [
     cardSize: "standard"
   },
   {
-    title: "PURPL / NDS \u2014 Pulsejet UAV Propulsion Analysis",
+    title: "PURPL / NDS - Pulsejet UAV Propulsion Analysis",
     slug: "purpl-nds-pulsejet-uav-propulsion",
     category: "Propulsion",
     yearStatus: "Selected work",
@@ -370,11 +367,9 @@ export const projects: Project[] = [
       }
     ],
     cardSize: "standard",
-    confidentialityNote:
-      "Only non-sensitive, student-project-safe summary material is included here."
   },
   {
-    title: "FRC Robotics \u2014 Mechanical Design & Team Leadership",
+    title: "FRC Robotics - Mechanical Design and Team Leadership",
     slug: "frc-robotics-mechanical-design-leadership",
     category: "Robotics",
     yearStatus: "Team 868",

@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { InstantWorkJump } from "@/components/InstantWorkJump";
 import { LynxHero } from "@/components/LynxHero";
 import { ProjectCard } from "@/components/ProjectCard";
 import { ResearchSection } from "@/components/ResearchSection";
@@ -11,7 +10,6 @@ import { siteConfig } from "@/data/site";
 export default function Home() {
   return (
     <main>
-      <InstantWorkJump />
       <LynxHero />
 
       <section id="work" className="section-shell">
@@ -34,17 +32,6 @@ export default function Home() {
             <ProjectCard key={project.slug} project={project} index={index} />
           ))}
         </div>
-        <Reveal className="mt-8 border border-white/10 px-5 py-5">
-          <div className="flex flex-col justify-between gap-3 text-sm font-semibold text-muted md:flex-row md:items-center">
-            <p>
-              Project visuals use real CAD, drawings, photos, and analysis figures where approved;
-              future LYNX and research media slots remain intentionally reserved.
-            </p>
-            <p className="font-mono text-[0.68rem] font-bold uppercase text-cyan/75">
-              No stock / no AI art
-            </p>
-          </div>
-        </Reveal>
       </section>
 
       <ResearchSection />
@@ -56,7 +43,7 @@ export default function Home() {
           </Reveal>
           <Reveal className="about-statement">
             <p className="text-balance text-2xl leading-tight text-paper md:text-4xl lg:text-[2.75rem]">
-              I am a Purdue University student in Mechanical Engineering · Artificial
+              I am a Purdue University student in Mechanical Engineering / Artificial
               Intelligence & Machine Learning Minor, interested in the design and fabrication
               of complex physical systems. My work spans robotics, advanced materials,
               propulsion, composites, and the engineering process that turns CAD concepts into
@@ -75,6 +62,27 @@ export default function Home() {
               </div>
             </div>
           </Reveal>
+          <Reveal className="about-identity" delay={120}>
+            <div className="about-identity-headshot">
+              <Image
+                src={siteConfig.headshotSrc}
+                alt="Matthew Deng headshot"
+                fill
+                sizes="96px"
+                className="object-contain"
+              />
+            </div>
+            <div className="about-identity-copy">
+              <Image
+                src={siteConfig.purdueLogoSrc}
+                alt="Purdue mark"
+                width={36}
+                height={24}
+                className="about-identity-mark"
+              />
+              <p className="about-identity-label">West Lafayette / Purdue University</p>
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -86,7 +94,7 @@ export default function Home() {
             <p className="mt-5 text-lg leading-7 text-muted">
               Purdue University
               <br />
-              Mechanical Engineering
+              Mechanical Engineering / AI and ML Minor
             </p>
           </Reveal>
           <Reveal className="flex flex-wrap gap-3 lg:justify-end" delay={100}>
