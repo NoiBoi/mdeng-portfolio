@@ -1,4 +1,4 @@
-# Matthew Deng Portfolio
+# mdeng-portfolio
 
 Engineering portfolio website for Matthew Deng, built with Next.js, React, and Tailwind CSS.
 
