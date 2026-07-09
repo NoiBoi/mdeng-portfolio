@@ -79,6 +79,7 @@ export default function Home() {
                 width={36}
                 height={24}
                 className="about-identity-mark"
+                style={{ width: "auto", height: "auto" }}
               />
               <p className="about-identity-label">West Lafayette / Purdue University</p>
             </div>
@@ -102,15 +103,22 @@ export default function Home() {
               href={siteConfig.linkedIn}
               target="_blank"
               rel="noreferrer"
-              className="button-secondary"
+              className="button-secondary button-icon-link"
+              aria-label="Open Matthew Deng on LinkedIn"
             >
-              LinkedIn
+              <Image src={siteConfig.linkedInIconSrc} alt="" width={16} height={16} aria-hidden="true" />
+              <span>LinkedIn</span>
             </a>
-            <a href={`mailto:${siteConfig.email}`} className="button-secondary">
-              Email
+            <a
+              href={`mailto:${siteConfig.email}`}
+              className="button-secondary button-icon-link"
+              aria-label="Email Matthew Deng"
+            >
+              <Image src={siteConfig.mailIconSrc} alt="" width={16} height={16} aria-hidden="true" />
+              <span>Email</span>
             </a>
             <a href={siteConfig.resumeInquiryHref} className="button-primary">
-              Request resume
+              Request résumé
             </a>
           </Reveal>
         </div>

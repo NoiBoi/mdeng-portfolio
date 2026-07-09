@@ -10,7 +10,7 @@ export function BackToWorkLink() {
   };
 
   return (
-    <Link href="/#work" onClick={handleClick} className="button-secondary">
+    <Link href="/#work" onClick={handleClick} className="back-to-work-floating">
       Back to work
     </Link>
   );

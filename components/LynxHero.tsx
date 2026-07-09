@@ -13,11 +13,10 @@ import {
 import { AnimatedWords } from "@/components/AnimatedWords";
 import { siteConfig } from "@/data/site";
 
-type AnnotationId = "belt" | "lightweighting" | "motor";
+type AnnotationId = "belt" | "lightweighting" | "drive" | "actuator" | "architecture";
 
 type Hotspot = {
   id: AnnotationId;
-  index: string;
   ariaLabel: string;
   label: string;
   zoneClass: string;
@@ -29,33 +28,48 @@ type Hotspot = {
 const hotspots: Hotspot[] = [
   {
     id: "belt",
-    index: "1",
-    ariaLabel: "Inspect the precise belt-drive stage in the lower leg module",
-    label: "PRECISE BELT DRIVE",
-    zoneClass: "left-[48%] top-[67%]",
-    markerClass: "left-[53.5%] top-[71.5%]",
-    annotationClass: "left-[61.5%] top-[77.8%]",
-    leaderPoints: "54.0,71.1 59.2,77.6 61.6,77.6"
+    ariaLabel: "Inspect the belt-driven joint module in the lower leg assembly",
+    label: "BELT-DRIVEN JOINT MODULE",
+    zoneClass: "left-[46%] top-[63%]",
+    markerClass: "left-[52.6%] top-[70.8%]",
+    annotationClass: "left-[61.5%] top-[78.2%]",
+    leaderPoints: "53.4,71.4 58.8,78.0 61.8,78.0"
   },
   {
     id: "lightweighting",
-    index: "2",
     ariaLabel: "Inspect the generative-design lightweighting structure in the central bracket",
     label: "GENERATIVE-DESIGN LIGHTWEIGHTING",
     zoneClass: "left-[43%] top-[37%]",
-    markerClass: "left-[48.25%] top-[43.2%]",
-    annotationClass: "left-[29.6%] top-[48.8%]",
-    leaderPoints: "48.0,43.0 40.6,48.4 29.8,48.4"
+    markerClass: "left-[48.8%] top-[43.0%]",
+    annotationClass: "left-[27.5%] top-[49.2%]",
+    leaderPoints: "47.9,43.6 40.2,49.0 27.8,49.0"
   },
   {
-    id: "motor",
-    index: "3",
-    ariaLabel: "Inspect the compact motor geometry in the upper drive package",
-    label: "COMPACT MOTOR GEOMETRY",
-    zoneClass: "left-[57%] top-[10%]",
-    markerClass: "left-[62.25%] top-[15.2%]",
-    annotationClass: "left-[69.8%] top-[11.4%]",
-    leaderPoints: "62.2,15.0 68.0,11.8 69.9,11.8"
+    id: "drive",
+    ariaLabel: "Inspect the precision belt drive in the upper joint",
+    label: "PRECISION BELT DRIVE",
+    zoneClass: "left-[57%] top-[18%]",
+    markerClass: "left-[62.0%] top-[22.6%]",
+    annotationClass: "left-[69.5%] top-[19.0%]",
+    leaderPoints: "62.9,22.1 68.0,19.2 69.8,19.2"
+  },
+  {
+    id: "actuator",
+    ariaLabel: "Inspect the actuator packaging in the upper leg module",
+    label: "ACTUATOR PACKAGING",
+    zoneClass: "left-[48%] top-[10%]",
+    markerClass: "left-[54.0%] top-[15.4%]",
+    annotationClass: "left-[31.0%] top-[16.0%]",
+    leaderPoints: "53.1,15.5 46.8,16.0 31.3,16.0"
+  },
+  {
+    id: "architecture",
+    ariaLabel: "Inspect the modular leg architecture through the vertical side plate",
+    label: "MODULAR LEG ARCHITECTURE",
+    zoneClass: "left-[60%] top-[40%]",
+    markerClass: "left-[65.6%] top-[47.5%]",
+    annotationClass: "left-[72.0%] top-[47.0%]",
+    leaderPoints: "66.6,47.5 70.6,47.0 72.3,47.0"
   }
 ];
 
@@ -162,6 +176,7 @@ export function LynxHero() {
   const displayProgress = reducedMotion ? 0.6 : progress;
   const introOut = smoothstep(0.18, 0.29, displayProgress);
   const fullscreen = smoothstep(0.22, 0.52, displayProgress);
+  const mediaBlend = smoothstep(0.24, 0.54, displayProgress);
   const overlayIn = smoothstep(0.52, 0.64, displayProgress);
   const overlayOut = smoothstep(0.84, 0.94, displayProgress);
   const exit = smoothstep(0.84, 1, displayProgress);
@@ -227,7 +242,10 @@ export function LynxHero() {
     "--inspect-opacity": activeHotspot ? 0 : overlayOpacity,
     "--marker-opacity": activeHotspot ? 0.18 : overlayOpacity,
     "--art-x": `${pointer.x * 6}px`,
-    "--art-y": `${pointer.y * 4}px`
+    "--art-y": `${pointer.y * 4}px`,
+    "--transparent-opacity": 1 - mediaBlend,
+    "--background-opacity": mediaBlend,
+    "--hero-media-scale": lerp(1.58, 1, fullscreen)
   } as CSSProperties;
 
   const planeStyle = {
@@ -274,7 +292,7 @@ export function LynxHero() {
               Explore selected work
             </Link>
             <a href={siteConfig.resumeInquiryHref} className="button-secondary">
-              Request resume
+              Request résumé
             </a>
           </div>
         </div>
@@ -285,9 +303,16 @@ export function LynxHero() {
           onPointerMove={onPointerMove}
           onPointerLeave={resetPointer}
         >
-          <div className="hero-image-layer">
+          <div className="hero-image-layer hero-image-layer-transparent">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={siteConfig.heroMediaSrc} alt="LYNX Mk.1 leg module render" />
+            <img
+              src={siteConfig.heroTransparentMediaSrc}
+              alt="LYNX Mk.1 leg module render"
+            />
+          </div>
+          <div className="hero-image-layer hero-image-layer-background" aria-hidden="true">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={siteConfig.heroMediaSrc} alt="" />
           </div>
           <div className="hero-image-vignette" aria-hidden="true" />
 
@@ -313,7 +338,6 @@ export function LynxHero() {
                 }`}
                 aria-hidden="true"
               >
-                <span className="inspection-marker-index">{hotspot.index}</span>
               </span>
             ))}
             {hotspots.map((hotspot) => (
@@ -369,9 +393,10 @@ export function LynxHero() {
           </div>
         </div>
 
-        <p className={`scroll-cue ${displayProgress > 0.18 ? "opacity-0" : "opacity-100"}`}>
-          Scroll to inspect
-        </p>
+        <div className={`scroll-cue ${displayProgress > 0.18 ? "opacity-0" : "opacity-100"}`}>
+          <span className="scroll-cue-mark" aria-hidden="true" />
+          <span>Scroll to inspect</span>
+        </div>
       </div>
     </section>
   );

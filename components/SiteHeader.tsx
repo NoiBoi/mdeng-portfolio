@@ -60,6 +60,7 @@ export function SiteHeader() {
                 width={22}
                 height={14}
                 aria-hidden="true"
+                style={{ width: "auto", height: "auto" }}
               />
             </span>
             <span>Matthew Deng</span>
@@ -79,7 +80,7 @@ export function SiteHeader() {
             href={siteConfig.resumeInquiryHref}
             className="text-sm font-semibold text-muted transition-colors hover:text-paper focus-visible:focus-ring"
           >
-            Resume
+            Résumé
           </a>
         </div>
       </nav>
