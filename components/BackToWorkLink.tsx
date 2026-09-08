@@ -6,7 +6,7 @@ import type { MouseEvent } from "react";
 export function BackToWorkLink() {
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
-    window.location.assign("/?instantWork=1#work");
+    window.location.assign("/#work");
   };
 
   return (

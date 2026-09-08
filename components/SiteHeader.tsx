@@ -60,7 +60,7 @@ export function SiteHeader() {
                 width={22}
                 height={14}
                 aria-hidden="true"
-                style={{ width: 22, height: 14 }}
+                style={{ width: "auto", height: "auto" }}
               />
             </span>
             <span>Matthew Deng</span>

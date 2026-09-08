@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { InstantWorkJump } from "@/components/InstantWorkJump";
 import { LynxHero } from "@/components/LynxHero";
 import { ProjectCard } from "@/components/ProjectCard";
 import { ResearchSection } from "@/components/ResearchSection";
@@ -11,7 +10,6 @@ import { siteConfig } from "@/data/site";
 export default function Home() {
   return (
     <main>
-      <InstantWorkJump />
       <LynxHero />
 
       <section id="work" className="section-shell">
@@ -81,7 +79,7 @@ export default function Home() {
                 width={36}
                 height={24}
                 className="about-identity-mark"
-                style={{ width: 36, height: 24 }}
+                style={{ width: "auto", height: "auto" }}
               />
               <p className="about-identity-label">West Lafayette / Purdue University</p>
             </div>
