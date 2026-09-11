@@ -6,8 +6,8 @@ import { type MouseEvent, useEffect, useState } from "react";
 import { siteConfig } from "@/data/site";
 
 const navItems = [
-  { label: "Work", href: "/#work" },
   { label: "Research", href: "/#research" },
+  { label: "Engineering", href: "/#work" },
   { label: "About", href: "/#about" },
   { label: "Contact", href: "/#contact" }
 ];
@@ -25,15 +25,18 @@ export function SiteHeader() {
   useEffect(() => {
     const update = () => {
       const onHome = window.location.pathname === "/";
-      setShowBrand(!onHome || window.scrollY > window.innerHeight * 0.22);
+      const revealThreshold = window.matchMedia("(min-width: 901px)").matches ? 0.56 : 0.22;
+      setShowBrand(!onHome || window.scrollY > window.innerHeight * revealThreshold);
     };
 
     update();
     window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
     window.addEventListener("hashchange", update);
     window.addEventListener("popstate", update);
     return () => {
       window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
       window.removeEventListener("hashchange", update);
       window.removeEventListener("popstate", update);
     };
@@ -42,12 +45,13 @@ export function SiteHeader() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-graphite-950/82 backdrop-blur-md">
       <nav
-        className="mx-auto flex h-16 max-w-[1500px] items-center justify-between px-5 md:px-8"
+        className="mx-auto flex h-16 max-w-[1680px] items-center justify-between px-5 md:px-6"
         aria-label="Primary navigation"
       >
         <Link
           href="/"
           onClick={handleBrandClick}
+          aria-label="Matthew Deng — home"
           className={`site-brand font-mono text-xs font-bold uppercase text-paper transition hover:text-cyan focus-visible:focus-ring ${
             showBrand ? "site-brand-visible" : ""
           }`}
@@ -60,10 +64,23 @@ export function SiteHeader() {
                 width={22}
                 height={14}
                 aria-hidden="true"
-                style={{ width: 22, height: 14 }}
+                style={{ width: "auto", height: "auto" }}
               />
             </span>
-            <span>Matthew Deng</span>
+            <span className="site-brand-name" aria-hidden="true">
+              <Image
+                src="/assets/identity/matthew-wordmark.png"
+                alt=""
+                width={1556}
+                height={416}
+              />
+              <Image
+                src="/assets/identity/deng-wordmark.png"
+                alt=""
+                width={769}
+                height={415}
+              />
+            </span>
           </span>
         </Link>
         <div className="flex items-center gap-5 md:gap-8">

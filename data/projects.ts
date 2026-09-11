@@ -21,10 +21,18 @@ export type Project = {
   tags: string[];
   metrics?: string[];
   featured?: boolean;
+  homepage?: boolean;
+  homepageGroup?: "research" | "engineering";
+  homepageTitle?: string;
+  homepageMeta?: string;
+  homepageDescription?: string;
+  homepageTags?: string[];
+  homepageHideMedia?: boolean;
+  logoSrc?: string;
   mediaLabels: string[];
   cardMedia?: ProjectMedia;
   media?: ProjectMedia[];
-  galleryLayout?: "standard" | "per" | "pulsejet" | "frc" | "v-jaw";
+  galleryLayout?: "standard" | "per" | "pulsejet" | "frc" | "v-jaw" | "maxcalc";
   details: string[];
   detailSections?: ProjectDetailSection[];
   cardSize?: "wide" | "tall" | "standard";
@@ -108,11 +116,262 @@ export const projects: Project[] = [
     ],
   },
   {
+    title: "CoSMAP - Packaging Characterization & Reliability Testing",
+    slug: "cosmap-thermomechanical-packaging-characterization",
+    category: "Semiconductor Packaging / Reliability",
+    yearStatus: "Current research",
+    homepageTitle: "Characterization & Testing",
+    homepageGroup: "research",
+    homepageMeta: "CoSMAP / 2026—",
+    homepageDescription:
+      "Physical characterization for advanced packaging using optical metrology, mechanical testing, and purpose-built fixtures.",
+    homepageTags: ["Packaging", "Metrology", "Reliability"],
+    role: "Undergraduate Researcher",
+    description:
+      "Developing experimental workflows for temperature-dependent warpage, displacement, and mechanical reliability characterization in advanced semiconductor packaging.",
+    tags: ["Advanced Packaging", "Optical Metrology", "Mechanical Testing", "Thermomechanical Reliability", "Experimental Design"],
+    mediaLabels: ["Experimental Characterization Workflow"],
+    details: [
+      "Current work in the CoSMAP Lab centers on advanced semiconductor packaging, thermomechanical behavior, and the experimental methods required to measure physical response repeatably."
+    ],
+    detailSections: [
+      {
+        heading: "Research scope",
+        paragraphs: [
+          "The research focuses on temperature-dependent warpage, displacement, and mechanical reliability in advanced packaging structures. Work is ongoing, with emphasis on establishing defensible test methods rather than claiming final reliability conclusions."
+        ]
+      },
+      {
+        heading: "Optical and thermal characterization",
+        paragraphs: [
+          "Temperature-dependent displacement and warpage workflows are being developed around Keyence VK-X3000 optical metrology and thermal-chamber integration. Fixture design, measurement consistency, and repeatable data collection are central constraints."
+        ]
+      },
+      {
+        heading: "Mechanical and dynamic testing",
+        paragraphs: [
+          "Experimental work includes designing or supporting fixturing for four-point bend and solder-joint shear testing, along with Optomet 3D laser vibrometry and Lansmont shock testing.",
+          "These activities remain at different stages of development and support; the page does not imply that every planned test has produced a completed result."
+        ]
+      },
+    ],
+    cardSize: "wide"
+  },
+  {
+    title: "CoSMAP - Innolot Solder-Joint Creep Modeling & Analysis",
+    slug: "cosmap-innolot-creep-modeling-analysis",
+    category: "Semiconductor Packaging / Creep Modeling",
+    yearStatus: "Short-term model / 2026",
+    homepageTitle: "Creep Modeling & Analysis",
+    homepageGroup: "research",
+    homepageMeta: "CoSMAP / 2026",
+    homepageDescription:
+      "Short-term Innolot solder-joint creep modeling with whole-specimen validation and uncertainty analysis.",
+    homepageTags: ["Creep", "MATLAB", "Model Validation"],
+    role: "Research Analysis & Model Development",
+    description:
+      "A bounded interpolation model for short-term Innolot solder-joint creep, developed from raw tester records through data reduction, candidate-model comparison, whole-specimen validation, and uncertainty analysis.",
+    tags: ["Solder-Joint Creep", "MATLAB", "Nonlinear Regression", "Cross-Validation", "Uncertainty Analysis"],
+    metrics: [
+      "23 retained short-term creep tests",
+      "30-60 °C / 50-90 N measured test matrix",
+      "0.251 median leave-one-specimen-out normalized RMSE",
+      "100 / 100 whole-specimen bootstrap refits converged"
+    ],
+    mediaLabels: ["Creep Records", "Model Comparison", "Cross-Validation", "Uncertainty"],
+    details: [
+      "The analysis asks a deliberately limited question: how well can short-term creep strain be interpolated inside the measured stress-temperature-time domain? It does not treat a fitted equation as evidence of long-duration constitutive behavior or failure life."
+    ],
+    detailSections: [
+      {
+        heading: "Dataset and reduction",
+        paragraphs: [
+          "The retained dataset contains 23 constant-load tests at nominal temperatures of 30, 45, and 60 °C and forces from 50 to 90 N. Force and displacement were converted to equivalent joint stress and engineering shear strain using the eight-joint specimen geometry.",
+          "Each record was zeroed at detected load onset, screened for nonfinite samples, and reduced to one-second means before fitting. Two 60 °C, 90 N tests that entered rapid tertiary acceleration were retained for separate analysis but excluded from the ordinary global fit."
+        ]
+      },
+      {
+        heading: "Model comparison and selection",
+        paragraphs: [
+          "Findley, Burgers-type, and power-linear forms were first compared on individual records. Power-linear and Burgers-type equations described individual curves better than the simple Findley form, but that result did not establish an independently identifiable steady-rate term across specimens.",
+          "Four nested global forms were then compared using leave-one-specimen-out validation. The selected four-parameter primary-creep law had a median normalized RMSE of 0.251 and no parameter at a bound. More complex forms produced little practical validation benefit and less stable parameter behavior."
+        ]
+      },
+      {
+        heading: "Whole-specimen validation",
+        paragraphs: [
+          "Validation withheld complete specimens rather than random time points. This prevents measurements sharing the same geometry, mounting, zeroing, and drift from appearing in both training and validation data.",
+          "One hundred whole-specimen bootstrap refits were used to separate uncertainty in the fitted mean from the much wider variability expected for a future specimen. At 35 MPa, 45 °C, and 6 h, the fitted mean strain was 0.0440; the fitted-mean 95% interval was 0.0400 to 0.0516, while the approximate new-specimen interval was 0.0129 to 0.1468."
+        ]
+      },
+      {
+        heading: "Tertiary acceleration",
+        paragraphs: [
+          "The two 60 °C, 90 N records entered tertiary acceleration near 3.1 h and then terminated near the displacement-sensor limit at approximately 3.9 h. They did not reach rupture, so the analysis reports an operational acceleration onset rather than a failure-time result."
+        ]
+      },
+      {
+        heading: "Model boundary",
+        paragraphs: [
+          "The MATLAB predictor is restricted to exploratory interpolation over the measured short-term domain, approximately 0-6 h, 30-60 °C, and 25-46 MPa. It is not a lifetime law, design allowable, rupture model, or FEA material card."
+        ]
+      }
+    ],
+    cardSize: "wide"
+  },
+  {
+    title: "Automated Powder Dispensing - Process Equipment Development",
+    slug: "icon-automated-powder-dispensing",
+    category: "ICoN Programmable Cloud Lab",
+    yearStatus: "In development",
+    homepageTitle: "Automated Powder Dispensing",
+    homepageGroup: "research",
+    homepageMeta: "ICoN Programmable Cloud Lab / 2026—",
+    homepageDescription:
+      "Automated powder-dispensing hardware for controlled and repeatable materials-synthesis workflows.",
+    homepageTags: ["Automation", "Process Equipment", "Prototyping"],
+    role: "Undergraduate Researcher",
+    description:
+      "Developing automated powder-dispensing hardware to improve control and repeatability in materials-synthesis workflows.",
+    tags: ["Laboratory Automation", "Process Equipment", "Mechanism Design", "Prototyping", "Repeatability"],
+    mediaLabels: ["Powder Dispenser Architecture"],
+    details: [
+      "The ICoN Programmable Cloud Lab project applies hands-on powder-processing experience to laboratory automation and purpose-built process equipment."
+    ],
+    detailSections: [
+      {
+        heading: "Process objective",
+        paragraphs: [
+          "Manual precursor preparation exposes sources of variability in powder handling and dosing. The equipment concept is intended to make those steps more controlled and repeatable within future automated synthesis workflows."
+        ]
+      },
+      {
+        heading: "Equipment architecture",
+        paragraphs: [
+          "Current concepts combine precision axial positioning with rotary or agitation mechanisms, cartridge and nozzle geometry, and controlled dosing. Each mechanism is being considered as part of a complete powder-handling system rather than as an isolated printed component."
+        ]
+      },
+      {
+        heading: "Hardware iteration and status",
+        paragraphs: [
+          "Development is focused on architecture, prototyping, and understanding how mechanical choices affect powder flow and repeatability. Characterization and broader automation integration remain ongoing; this page does not claim a completed dispensing or synthesis platform."
+        ]
+      }
+    ],
+    cardSize: "standard"
+  },
+  {
+    title: "MAXCalc - Synthesis Planning & Experimental Analysis",
+    slug: "maxcalc-synthesis-planning-analysis",
+    category: "Engineering Software / Materials",
+    yearStatus: "Active development",
+    homepageTitle: "MAXCalc",
+    homepageGroup: "research",
+    homepageMeta: "LSML / 2026—",
+    homepageDescription:
+      "Synthesis-planning and VNA/EMI analysis tools built around laboratory workflows.",
+    homepageTags: ["Materials", "Scientific Computing", "Analysis"],
+    logoSrc: "/assets/maxcalc/maxcalc-logo.svg",
+    role: "Developer",
+    description:
+      "A domain-specific engineering platform translating MAX-phase synthesis and VNA/EMI characterization workflows into practical calculations and analysis tools.",
+    tags: ["MAX Phases", "Precursor Balancing", "Synthesis Planning", "VNA / EMI", "Scientific Computing"],
+    mediaLabels: ["Recipe Workspace", "Precursor Route", "Site Descriptors", "Comparison", "EMI Analysis", "Publication Output"],
+    media: [
+      {
+        src: "/assets/maxcalc/calculation-workspace.png",
+        alt: "MAXCalc recipe workspace showing a mixed-metal 413 MAX formula, normalized site occupancy, and final precursor weighing results.",
+        caption: "Auditable recipe workspace — target definition, normalized composition, and final weighing result",
+        fit: "contain",
+        tone: "cad"
+      },
+      {
+        src: "/assets/maxcalc/precursor-route.png",
+        alt: "MAXCalc precursor-route editor with aluminum, carbon, niobium, tantalum, titanium, and vanadium inputs.",
+        caption: "Precursor-route editor with purity assumptions and rounding review kept visible",
+        fit: "contain",
+        tone: "cad"
+      },
+      {
+        src: "/assets/maxcalc/site-descriptors.png",
+        alt: "MAXCalc site descriptor interface for M, A, and X site composition and calculation controls.",
+        caption: "Explicit M, A, and X site occupancy with dataset and solver controls",
+        fit: "contain",
+        tone: "cad"
+      },
+      {
+        src: "/assets/maxcalc/recipe-comparison.png",
+        alt: "MAXCalc comparison view showing deterministic differences across related TiVNb MAX-phase recipes.",
+        caption: "Recipe comparison — arithmetic differences are separated from claims of scientific quality",
+        fit: "contain",
+        tone: "cad"
+      },
+      {
+        src: "/assets/maxcalc/emi-dataset-validation.png",
+        alt: "MAXCalc EMI analyzer showing imported Ka-band datasets with measurement-quality warnings and metadata.",
+        caption: "EMI dataset intake with per-file metadata, validity screening, and measurement-quality warnings",
+        fit: "contain",
+        tone: "cad"
+      },
+      {
+        src: "/assets/maxcalc/publication-plot-formatting.png",
+        alt: "MAXCalc publication plot controls for labels, axes, uncertainty, line styles, and export dimensions.",
+        caption: "Publication controls change figure presentation without altering analysis data",
+        fit: "contain",
+        tone: "cad"
+      },
+      {
+        src: "/assets/maxcalc/print-output.png",
+        alt: "MAXCalc print-ready weighing sheets for two saved MAX-phase recipes.",
+        caption: "Print-ready weighing sheets retain formulas, masses, verification state, and engine provenance",
+        fit: "contain",
+        tone: "document"
+      }
+    ],
+    galleryLayout: "maxcalc",
+    details: [
+      "MAXCalc translates laboratory synthesis and characterization workflows into a purpose-built engineering tool for planning experiments and processing results."
+    ],
+    detailSections: [
+      {
+        heading: "Engineering objective",
+        paragraphs: [
+          "The tool reduces repeated manual calculation while keeping synthesis assumptions and precursor choices visible to the researcher. Its structure was informed by real formulation, stoichiometry, and powder-processing work across multiple MAX-phase systems."
+        ]
+      },
+      {
+        heading: "Synthesis planning",
+        paragraphs: [
+          "MAX composition parsing, precursor selection and balancing, route solving, and practical weighing outputs support the path from a target formula to a laboratory batch plan."
+        ]
+      },
+      {
+        heading: "Characterization analysis",
+        paragraphs: [
+          "VNA and EMI data-processing functions extend MAXCalc from synthesis planning into characterization and measured performance analysis."
+        ]
+      },
+      {
+        heading: "Validation and status",
+        paragraphs: [
+          "Calculations and outputs are being checked against active laboratory methods and prior hand calculations so the tool remains useful at the bench. Development is ongoing."
+        ]
+      }
+    ],
+    cardSize: "standard"
+  },
+  {
     title: "Aluminum V-Jaw Fixture - Materials-Processing Tooling",
     slug: "aluminum-v-jaw-fixture",
     category: "Manufacturing / Research Tooling",
     yearStatus: "Machined / validated",
     role: "Designer and Fabricator",
+    homepageTitle: "Aluminum V-Jaw Fixture",
+    homepageGroup: "research",
+    homepageDescription:
+      "Machined fixture developed through printed prototypes for repeatable MAX-sample processing.",
+    homepageTags: ["CAD", "CNC", "DFM"],
+    homepageHideMedia: true,
     description:
       "Iterative fixture development for clamping circular materials samples during pass-through milling, progressing from 3D-printed prototypes to a machinable aluminum design and standalone technical drawing.",
     tags: ["CAD", "DFM", "Fixture Design", "CNC", "Additive Prototyping"],
@@ -223,6 +482,11 @@ export const projects: Project[] = [
     category: "Composites / Motorsport",
     yearStatus: "Selected work",
     role: "Aerodynamics Subteam Engineer",
+    homepageTitle: "Purdue Electric Racing",
+    homepageGroup: "engineering",
+    homepageDescription:
+      "Composite aero manufacturing, resin-infusion tooling, and supporting mechanical design.",
+    homepageTags: ["Composites", "Tooling", "FSAE"],
     description:
       "Aerodynamic component and composite-manufacturing work for a Formula SAE team, including resin-infusion workflow support and FDM tooling for vacuum processes.",
     tags: ["Composites", "FDM", "Aerodynamics", "Manufacturing"],
@@ -299,6 +563,7 @@ export const projects: Project[] = [
     category: "Propulsion",
     yearStatus: "Selected work",
     role: "Mechanical & Analysis Contributor",
+    homepage: false,
     description:
       "Takeoff performance, structural screening, dynamic reed-valve modeling, and safety-planning support for a student pulsejet UAV project.",
     tags: ["Propulsion", "MATLAB", "Structural Analysis", "Systems Integration"],
@@ -374,6 +639,11 @@ export const projects: Project[] = [
     category: "Robotics",
     yearStatus: "Team 868",
     role: "Mechanical Lead / Mentor",
+    homepageTitle: "FRC / Team 868",
+    homepageGroup: "engineering",
+    homepageDescription:
+      "Mechanical design and fabrication across several years of competitive robotics.",
+    homepageTags: ["Robotics", "Manufacturing", "Leadership"],
     description:
       "Mechanical subsystem design, fabrication, and cross-functional leadership for Team 868, including CAD and machining mentorship.",
     tags: ["Robotics", "CAD", "Manufacturing", "Leadership"],
@@ -424,7 +694,9 @@ export const projects: Project[] = [
   }
 ];
 
-export const selectedProjects = projects.filter((project) => !project.featured);
+export const engineeringProjects = projects.filter(
+  (project) => project.homepageGroup === "engineering" && project.homepage !== false
+);
 
 export function getProject(slug: string) {
   return projects.find((project) => project.slug === slug);

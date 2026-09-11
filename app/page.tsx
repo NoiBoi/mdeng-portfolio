@@ -1,24 +1,24 @@
 import Image from "next/image";
-import { InstantWorkJump } from "@/components/InstantWorkJump";
 import { LynxHero } from "@/components/LynxHero";
 import { ProjectCard } from "@/components/ProjectCard";
 import { ResearchSection } from "@/components/ResearchSection";
 import { SectionHeading } from "@/components/SectionHeading";
 import { Reveal } from "@/components/Reveal";
-import { selectedProjects } from "@/data/projects";
+import { engineeringProjects } from "@/data/projects";
 import { siteConfig } from "@/data/site";
 
 export default function Home() {
   return (
     <main>
-      <InstantWorkJump />
       <LynxHero />
 
-      <section id="work" className="section-shell">
+      <ResearchSection />
+
+      <section id="work" className="section-shell border-t border-white/10">
         <SectionHeading
-          eyebrow="Selected Work"
-          title="Hardware projects, research tooling, and systems work."
-          description="A compact index of mechanical, manufacturing, robotics, propulsion, and research-tooling projects with real CAD, drawings, photos, and analysis figures."
+          eyebrow="Selected Engineering"
+          title="Team-built systems beyond the research lab."
+          description="Earlier work in motorsport and competitive robotics, focused on the parts, tooling, and production decisions I directly contributed."
         />
         <Reveal className="work-drawing-banner">
           <Image
@@ -30,47 +30,45 @@ export default function Home() {
           />
         </Reveal>
         <div className="grid auto-rows-auto gap-5 md:grid-cols-8">
-          {selectedProjects.map((project, index) => (
+          {engineeringProjects.map((project, index) => (
             <ProjectCard key={project.slug} project={project} index={index} />
           ))}
         </div>
       </section>
 
-      <ResearchSection />
+      <section id="about" className="section-shell closing-about border-t border-white/10">
+        <Reveal className="closing-section-heading">
+          <p className="section-label">About</p>
+        </Reveal>
 
-      <section id="about" className="section-shell border-t border-white/10">
         <div className="about-grid">
-          <Reveal className="about-rail">
-            <p className="font-mono text-[0.68rem] font-bold uppercase text-cyan/70">04 / About</p>
-          </Reveal>
           <Reveal className="about-statement">
-            <p className="text-balance text-2xl leading-tight text-paper md:text-4xl lg:text-[2.75rem]">
-              I am a Purdue University student in Mechanical Engineering / Artificial
-              Intelligence & Machine Learning Minor, interested in the design and fabrication
-              of complex physical systems. My work spans robotics, advanced materials,
-              propulsion, composites, and the engineering process that turns CAD concepts into
-              real hardware.
+            <p>
+              Mechanical Engineering at Purdue, working across packaging, advanced materials,
+              and experimental systems.
             </p>
             <div className="about-meta">
-              <div>
+              <div className="about-meta-item">
                 <p className="about-meta-label">Focus</p>
                 <p className="about-meta-text">
-                  Robotics / Materials / Propulsion / Manufacturing
+                  Packaging / Materials / Process / Reliability
                 </p>
               </div>
-              <div>
+              <div className="about-meta-item">
                 <p className="about-meta-label">Method</p>
-                <p className="about-meta-text">CAD - analysis - prototype - fabrication - test</p>
+                <p className="about-meta-text">Design — fabricate — characterize — model — iterate</p>
               </div>
             </div>
           </Reveal>
+
           <Reveal className="about-identity" delay={120}>
             <div className="about-identity-headshot">
               <Image
                 src={siteConfig.headshotSrc}
                 alt="Matthew Deng headshot"
                 fill
-                sizes="96px"
+                sizes="(max-width: 700px) 116px, 176px"
+                unoptimized
                 className="object-contain"
               />
             </div>
@@ -78,52 +76,66 @@ export default function Home() {
               <Image
                 src={siteConfig.purdueLogoSrc}
                 alt="Purdue mark"
-                width={36}
-                height={24}
+                width={112}
+                height={34}
                 className="about-identity-mark"
-                style={{ width: 36, height: 24 }}
               />
-              <p className="about-identity-label">West Lafayette / Purdue University</p>
+              <div>
+                <p className="about-identity-name">Matthew Deng</p>
+                <p className="about-identity-detail">Mechanical Engineering</p>
+              </div>
+              <p className="about-identity-label">Purdue University / West Lafayette</p>
             </div>
           </Reveal>
         </div>
       </section>
 
-      <section id="contact" className="section-shell border-t border-white/10">
-        <div className="grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-end">
-          <Reveal>
+      <section id="contact" className="section-shell closing-contact border-t border-white/10">
+        <div className="contact-grid">
+          <Reveal className="contact-intro">
             <p className="section-label">Contact</p>
-            <h2 className="mt-5 text-4xl font-semibold text-paper md:text-6xl">Matthew Deng</h2>
-            <p className="mt-5 text-lg leading-7 text-muted">
-              Purdue University
-              <br />
-              Mechanical Engineering / AI and ML Minor
-            </p>
+            <h2>Questions, collaboration, and project details.</h2>
+            <p>For project context, research conversations, or résumé requests, reach me directly.</p>
           </Reveal>
-          <Reveal className="flex flex-wrap gap-3 lg:justify-end" delay={100}>
-            <a
-              href={siteConfig.linkedIn}
-              target="_blank"
-              rel="noreferrer"
-              className="button-secondary button-icon-link"
-              aria-label="Open Matthew Deng on LinkedIn"
-            >
-              <Image src={siteConfig.linkedInIconSrc} alt="" width={16} height={16} aria-hidden="true" />
-              <span>LinkedIn</span>
-            </a>
-            <a
-              href={`mailto:${siteConfig.email}`}
-              className="button-secondary button-icon-link"
-              aria-label="Email Matthew Deng"
-            >
-              <Image src={siteConfig.mailIconSrc} alt="" width={16} height={16} aria-hidden="true" />
-              <span>Email</span>
-            </a>
-            <a href={siteConfig.resumeInquiryHref} className="button-primary">
-              Request résumé
-            </a>
+
+          <Reveal className="contact-direct" delay={80}>
+            <p className="contact-direct-label">Email</p>
+            <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
+            <p>Mechanical Engineering / Purdue University</p>
           </Reveal>
         </div>
+
+        <Reveal className="contact-actions" delay={120}>
+          <a
+            href={`mailto:${siteConfig.email}`}
+            className="contact-action"
+            aria-label="Email Matthew Deng"
+          >
+            <Image src={siteConfig.mailIconSrc} alt="" width={18} height={18} aria-hidden="true" />
+            <span>Email</span>
+            <span aria-hidden="true">→</span>
+          </a>
+          <a
+            href={siteConfig.linkedIn}
+            target="_blank"
+            rel="noreferrer"
+            className="contact-action"
+            aria-label="Open Matthew Deng on LinkedIn"
+          >
+            <Image src={siteConfig.linkedInIconSrc} alt="" width={18} height={18} aria-hidden="true" />
+            <span>LinkedIn</span>
+            <span aria-hidden="true">→</span>
+          </a>
+          <a href={siteConfig.resumeInquiryHref} className="contact-action contact-action-primary">
+            <span>Request résumé</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        </Reveal>
+
+        <Reveal className="contact-footer" delay={160}>
+          <p>Matthew Deng / Mechanical Engineering</p>
+          <p>Purdue University / West Lafayette, Indiana</p>
+        </Reveal>
       </section>
     </main>
   );

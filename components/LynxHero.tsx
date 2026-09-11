@@ -6,20 +6,13 @@ import {
   type MouseEvent,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState
 } from "react";
 import { AnimatedWords } from "@/components/AnimatedWords";
 import { siteConfig } from "@/data/site";
 
-type AnnotationId =
-  | "belt"
-  | "lightweighting"
-  | "actuator"
-  | "robotArchitecture"
-  | "electronics"
-  | "printedStructure";
+type AnnotationId = "actuator" | "architecture" | "lightweighting" | "drive";
 
 type Hotspot = {
   id: AnnotationId;
@@ -31,63 +24,42 @@ type Hotspot = {
   leaderPoints: string;
 };
 
-const legHotspots: Hotspot[] = [
+const hotspots: Hotspot[] = [
   {
-    id: "belt",
-    ariaLabel: "Inspect the belt-driven joint module in the lower leg assembly",
-    label: "BELT-DRIVEN JOINT MODULE",
-    zoneClass: "left-[20.5%] top-[68.5%] w-[7%] h-[8%]",
-    markerClass: "left-[24.0%] top-[72.5%]",
-    annotationClass: "left-[31.2%] top-[78.0%]",
-    leaderPoints: "24.9,73.0 29.3,77.8 31.35,77.8"
+    id: "actuator",
+    ariaLabel: "Inspect the upper actuator packaging",
+    label: "ACTUATOR PACKAGING",
+    zoneClass: "left-[58.75%] top-[15.0%]",
+    markerClass: "left-[63.0%] top-[19.5%]",
+    annotationClass: "left-[66.2%] top-[17.0%]",
+    leaderPoints: "63.5,19.5 65.0,17.7 66.5,17.7"
+  },
+  {
+    id: "architecture",
+    ariaLabel: "Inspect the modular upper-leg architecture",
+    label: "MODULAR LEG ARCHITECTURE",
+    zoneClass: "left-[49.55%] top-[10.3%]",
+    markerClass: "left-[53.8%] top-[14.8%]",
+    annotationClass: "left-[40.8%] top-[13.0%]",
+    leaderPoints: "53.3,14.8 48.7,13.7 41.1,13.7"
   },
   {
     id: "lightweighting",
-    ariaLabel: "Inspect the generative-design lightweighting structure in the central bracket",
-    label: "GENERATIVE-DESIGN LIGHTWEIGHTING",
-    zoneClass: "left-[20.0%] top-[42.5%] w-[7%] h-[8%]",
-    markerClass: "left-[23.6%] top-[46.5%]",
-    annotationClass: "left-[31.0%] top-[43.4%]",
-    leaderPoints: "24.55,46.1 29.0,43.6 31.15,43.6"
+    ariaLabel: "Inspect the generative-lightweighting side structure",
+    label: "GENERATIVE LIGHTWEIGHTING",
+    zoneClass: "left-[53.95%] top-[43.7%]",
+    markerClass: "left-[58.2%] top-[48.2%]",
+    annotationClass: "left-[62.0%] top-[45.9%]",
+    leaderPoints: "58.7,48.2 60.4,46.6 62.3,46.6"
   },
   {
-    id: "actuator",
-    ariaLabel: "Inspect the actuator packaging in the upper leg module",
-    label: "ACTUATOR PACKAGING",
-    zoneClass: "left-[22.0%] top-[20.5%] w-[7%] h-[8%]",
-    markerClass: "left-[25.4%] top-[24.4%]",
-    annotationClass: "left-[32.6%] top-[19.2%]",
-    leaderPoints: "26.35,23.95 30.4,19.4 32.75,19.4"
-  }
-];
-
-const robotHotspots: Hotspot[] = [
-  {
-    id: "robotArchitecture",
-    ariaLabel: "Inspect the modular 12 degree of freedom quadruped architecture",
-    label: "12-DOF MODULAR ARCHITECTURE",
-    zoneClass: "left-[46%] top-[51%] w-[8%] h-[9%]",
-    markerClass: "left-[50.4%] top-[55.4%]",
-    annotationClass: "left-[27.5%] top-[56.2%]",
-    leaderPoints: "49.45,55.45 42.2,56.05 27.65,56.05"
-  },
-  {
-    id: "electronics",
-    ariaLabel: "Inspect the electronics and control PCB integration area",
-    label: "PCB + CONTROL INTEGRATION",
-    zoneClass: "left-[66.8%] top-[43%] w-[7%] h-[8%]",
-    markerClass: "left-[70.35%] top-[46.9%]",
-    annotationClass: "left-[75.7%] top-[42.2%]",
-    leaderPoints: "71.25,46.35 74.45,42.45 75.85,42.45"
-  },
-  {
-    id: "printedStructure",
-    ariaLabel: "Inspect the printed lightweight structural frame and serviceable modules",
-    label: "PRINTED LIGHTWEIGHT STRUCTURE",
-    zoneClass: "left-[55%] top-[34%] w-[9%] h-[8%]",
-    markerClass: "left-[59.3%] top-[38.0%]",
-    annotationClass: "left-[36.0%] top-[33.8%]",
-    leaderPoints: "58.35,37.75 51.8,34.0 36.15,34.0"
+    id: "drive",
+    ariaLabel: "Inspect the lower precision belt drive",
+    label: "PRECISION BELT DRIVE",
+    zoneClass: "left-[55.75%] top-[65.5%]",
+    markerClass: "left-[60.0%] top-[70.0%]",
+    annotationClass: "left-[63.8%] top-[71.6%]",
+    leaderPoints: "60.5,70.0 62.2,71.7 64.1,71.7"
   }
 ];
 
@@ -139,15 +111,22 @@ function useViewportSize() {
 
 export function LynxHero() {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const archiveLabelRef = useRef<HTMLParagraphElement | null>(null);
   const pointerTargetRef = useRef({ x: 0, y: 0 });
   const pointerCurrentRef = useRef({ x: 0, y: 0 });
   const pointerRafRef = useRef(0);
   const [progress, setProgress] = useState(0);
-  const [scrollCueActive, setScrollCueActive] = useState(false);
   const [pointer, setPointer] = useState({ x: 0, y: 0 });
   const [activeHotspot, setActiveHotspot] = useState<AnnotationId | null>(null);
+  const [archiveLabelWidth, setArchiveLabelWidth] = useState(300);
   const reducedMotion = useReducedMotion();
   const viewport = useViewportSize();
+  const isMobileStage = viewport.width <= 900;
+
+  useEffect(() => {
+    const width = archiveLabelRef.current?.getBoundingClientRect().width;
+    if (width) setArchiveLabelWidth(width);
+  }, [viewport.width]);
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -193,35 +172,29 @@ export function LynxHero() {
   }, [reducedMotion]);
 
   const displayProgress = reducedMotion ? 0.6 : progress;
-  const introOut = smoothstep(0.18, 0.29, displayProgress);
-  const fullscreen = smoothstep(0.18, 0.46, displayProgress);
-  const mediaBlend = smoothstep(0.24, 0.54, displayProgress);
-  const robotReveal = smoothstep(0.56, 0.78, displayProgress);
-  const robotHalo = smoothstep(0.56, 0.7, displayProgress);
-  const archiveOut = smoothstep(0.16, 0.34, displayProgress);
-  const overlayIn = smoothstep(0.52, 0.64, displayProgress);
-  const overlayOut = smoothstep(0.84, 0.94, displayProgress);
-  const exit = smoothstep(0.84, 1, displayProgress);
+  const introOut = smoothstep(isMobileStage ? 0.08 : 0.18, isMobileStage ? 0.22 : 0.29, displayProgress);
+  const fullscreen = smoothstep(isMobileStage ? 0.12 : 0.18, isMobileStage ? 0.36 : 0.38, displayProgress);
+  const mediaBlend = displayProgress <= (isMobileStage ? 0.3 : 0.28)
+    ? 0
+    : smoothstep(isMobileStage ? 0.3 : 0.34, isMobileStage ? 0.46 : 0.56, displayProgress);
+  const archiveOut = smoothstep(isMobileStage ? 0.06 : 0.52, isMobileStage ? 0.16 : 0.64, displayProgress);
+  const mobileNodeExit = 1 - smoothstep(0.82, 0.88, displayProgress);
+  const mobileNodeOpacity = (index: number) =>
+    smoothstep(0.38 + index * 0.09, 0.43 + index * 0.09, displayProgress) * mobileNodeExit;
+  const desktopNodeExit = 1 - smoothstep(0.84, 0.94, displayProgress);
+  const desktopNodeOpacity = (index: number) =>
+    smoothstep(0.5 + index * 0.04, 0.54 + index * 0.04, displayProgress) * desktopNodeExit;
+  const overlayIn = smoothstep(isMobileStage ? 0.88 : 0.52, isMobileStage ? 0.92 : 0.64, displayProgress);
+  const overlayOut = smoothstep(isMobileStage ? 0.965 : 0.84, isMobileStage ? 0.99 : 0.94, displayProgress);
+  const exit = smoothstep(isMobileStage ? 0.97 : 0.84, 1, displayProgress);
   const overlayOpacity = reducedMotion ? 1 : overlayIn * (1 - overlayOut);
-  const activeHotspots = [...legHotspots, ...robotHotspots];
+  const archiveMove = smoothstep(0.3, 0.62, displayProgress);
+  const desktopGutter = Math.max(24, (viewport.width - 1680) / 2 + 24);
+  const overlayInset = clamp(viewport.width * 0.02, 20, 36);
+  const archiveStart = viewport.width - desktopGutter - archiveLabelWidth;
+  const archiveEnd = viewport.width - overlayInset - archiveLabelWidth;
   const hotspotsAvailable =
-    !reducedMotion && displayProgress > 0.68 && displayProgress < 0.92;
-
-  const planeGeometry = useMemo(() => {
-    const startWidth = Math.min(viewport.width * 0.74, 1110);
-    const startHeight = startWidth / 1.32;
-    const startLeft = viewport.width * 0.31;
-    const startTop = viewport.height * 0.105;
-    const width = lerp(startWidth, viewport.width, fullscreen);
-    const height = lerp(startHeight, viewport.height * 0.94, fullscreen);
-
-    return {
-      left: lerp(startLeft, 0, fullscreen),
-      top: lerp(startTop, viewport.height * 0.06, fullscreen),
-      width,
-      height
-    };
-  }, [fullscreen, viewport.height, viewport.width]);
+    !isMobileStage && !reducedMotion && displayProgress > 0.52 && displayProgress < 0.92;
 
   const onPointerMove = useCallback(
     (event: React.PointerEvent<HTMLElement>) => {
@@ -255,43 +228,35 @@ export function LynxHero() {
     }, 80);
   }, []);
 
-  const handleScrollCueClick = useCallback(() => {
-    if (reducedMotion) return;
-    setScrollCueActive(true);
-    const node = sectionRef.current;
-    const target = node
-      ? window.scrollY + node.getBoundingClientRect().top + window.innerHeight * 1.45
-      : window.innerHeight * 1.45;
-    window.scrollTo({ top: target, behavior: "smooth" });
-    window.setTimeout(() => setScrollCueActive(false), 900);
-  }, [reducedMotion]);
-
   const heroStyle = {
     "--intro-opacity": 1 - introOut,
     "--intro-y": `${introOut * -18}px`,
     "--overlay-opacity": overlayOpacity,
     "--overlay-y": `${(1 - overlayOpacity) * 14}px`,
-    "--archive-opacity": 1 - archiveOut,
+    "--archive-opacity": isMobileStage ? 1 - archiveOut : 1 - overlayOut,
+    "--archive-left": `${lerp(archiveStart, archiveEnd, archiveMove)}px`,
+    "--archive-y": `${lerp(0, -26, archiveMove)}px`,
     "--inspect-opacity": activeHotspot ? 0 : overlayOpacity,
-    "--marker-opacity": activeHotspot ? 0.18 : overlayOpacity,
     "--art-x": `${pointer.x * 6}px`,
     "--art-y": `${pointer.y * 4}px`,
-    "--transparent-opacity": 1 - mediaBlend,
+    "--hero-stage-x": `${lerp(
+      viewport.width * (isMobileStage ? -0.045 : 0.18),
+      isMobileStage ? viewport.width * -0.045 : 0,
+      fullscreen
+    )}px`,
+    "--hero-stage-y": `${lerp(isMobileStage ? viewport.height * 0.315 : 0, 0, fullscreen)}px`,
+    "--authentic-shadow-opacity": (isMobileStage ? 1 : 0.72) * mediaBlend,
+    "--authentic-shadow-y": `${lerp(59, 72, fullscreen)}%`,
+    "--transparent-opacity": 1,
     "--background-opacity": mediaBlend,
-    "--robot-opacity": 1,
-    "--robot-halo-opacity": robotHalo * 0.46,
-    "--robot-slide-x": `${lerp(64, 0, robotReveal)}vw`,
-    "--leg-shift-x": `${lerp(0, -30, fullscreen)}vw`,
-    "--leg-fade": 1 - robotReveal * 0.08,
-    "--hero-media-scale": lerp(1.62, 1.05, fullscreen),
-    "--hero-media-y": `${lerp(11, 10.5, fullscreen)}%`
+    "--hero-media-scale": lerp(isMobileStage ? 1.5 : 0.78, isMobileStage ? 3.05 : 0.96, fullscreen)
   } as CSSProperties;
 
   const planeStyle = {
-    left: `${planeGeometry.left}px`,
-    top: `${planeGeometry.top - exit * viewport.height * 0.025}px`,
-    width: `${planeGeometry.width}px`,
-    height: `${planeGeometry.height}px`,
+    left: isMobileStage ? -16 : 0,
+    top: `${exit * viewport.height * -0.025}px`,
+    width: `${viewport.width + (isMobileStage ? 32 : 0)}px`,
+    height: `${viewport.height}px`,
     opacity: 1 - exit * 0.24,
     transform: `scale(${1 - exit * 0.035})`
   } as CSSProperties;
@@ -307,24 +272,41 @@ export function LynxHero() {
         <div className="technical-backdrop" aria-hidden="true" />
 
         <div className="hero-copy" aria-hidden={introOut > 0.96}>
-          <p className="hero-reveal section-label">Purdue University</p>
-          <p className="hero-name hero-reveal hero-delay-1">
-            <AnimatedWords text="Matthew Deng" />
-          </p>
+          <div className="hero-type-flare" aria-hidden="true" />
+          <div
+            className="hero-name hero-reveal hero-delay-1"
+            role="img"
+            aria-label="Matthew Deng"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="hero-name-image hero-name-image-matthew"
+              src="/assets/identity/matthew-wordmark.png"
+              alt=""
+              aria-hidden="true"
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="hero-name-image hero-name-image-deng"
+              src="/assets/identity/deng-wordmark.png"
+              alt=""
+              aria-hidden="true"
+            />
+          </div>
           <h1
             id="hero-title"
             className="hero-title hero-reveal hero-delay-2 mt-5 text-balance text-5xl font-semibold leading-[1.02] text-paper md:text-6xl xl:text-[4.9rem]"
           >
-            <AnimatedWords text="Engineering systems from CAD to fabricated hardware." startDelay={210} />
+            <AnimatedWords text="Mechanical Engineering at Purdue." startDelay={210} />
           </h1>
           <p className="hero-reveal hero-delay-3 mt-7 max-w-xl text-lg leading-8 text-muted">
             <AnimatedWords
-              text="Robotics, advanced materials, propulsion, and manufacturing at Purdue University."
+              text="Packaging / materials / experimental systems"
               startDelay={430}
             />
           </p>
           <p className="hero-reveal hero-delay-4 mt-7 max-w-2xl font-mono text-[0.68rem] font-bold uppercase leading-5 text-dim">
-            Mechanical Engineering / Artificial Intelligence and Machine Learning Minor / 4.00 GPA
+            4.00 GPA
           </p>
           <div className="hero-reveal hero-delay-5 mt-8 flex flex-wrap gap-3">
             <Link href="/#work" onClick={handleJumpToWork} className="button-primary">
@@ -333,11 +315,12 @@ export function LynxHero() {
             <a href={siteConfig.resumeInquiryHref} className="button-secondary">
               Request résumé
             </a>
-            <Link href="/projects/lynx" className="button-secondary hero-mobile-project-link">
-              View LYNX project
-            </Link>
           </div>
         </div>
+
+        <p ref={archiveLabelRef} className="hero-archive-label">
+          FEATURED ARTIFACT / LYNX MK.1 LEG MODULE
+        </p>
 
         <div
           className="hero-art-plane"
@@ -345,6 +328,14 @@ export function LynxHero() {
           onPointerMove={onPointerMove}
           onPointerLeave={resetPointer}
         >
+          <div className="hero-image-layer hero-image-layer-shadow" aria-hidden="true">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={siteConfig.heroMediaSrc} alt="" />
+          </div>
+          <div className="hero-image-layer hero-image-layer-background" aria-hidden="true">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={siteConfig.heroMediaSrc} alt="" />
+          </div>
           <div className="hero-image-layer hero-image-layer-transparent">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -352,45 +343,49 @@ export function LynxHero() {
               alt="LYNX Mk.1 leg module render"
             />
           </div>
-          <div className="hero-image-layer hero-image-layer-background" aria-hidden="true">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={siteConfig.heroMediaSrc} alt="" />
-          </div>
-          <div className="hero-image-layer hero-image-layer-robot-halo" aria-hidden="true">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={siteConfig.heroRobotHaloMediaSrc} alt="" />
-          </div>
-          <div className="hero-image-layer hero-image-layer-robot" aria-hidden="true">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={siteConfig.heroRobotMediaSrc} alt="" />
-          </div>
           <div className="hero-image-vignette" aria-hidden="true" />
 
-          <p className="hero-archive-label">LYNX MK.1 LEG MODULE / DRIVE ASSEMBLY</p>
           <p className="hero-inspect-prompt">Hover components to inspect</p>
 
           <div className="hero-caption" aria-hidden={overlayOpacity < 0.08}>
-            <p className="font-mono text-[0.7rem] font-bold uppercase text-paper">
-              LYNX - Modular 12-DOF Quadruped Robot
-            </p>
-            <p className="mt-2 text-sm text-muted">Founder & Lead Engineer / 2023-Present</p>
-            <Link href="/projects/lynx" className="mt-5 inline-flex button-secondary">
-              View project
+            <div className="hero-caption-kicker">
+              <span>01</span>
+              <span>Featured system</span>
+            </div>
+            <div className="hero-caption-heading">
+              <p>LYNX</p>
+              <p>Modular 12-DOF quadruped leg</p>
+            </div>
+            <div className="hero-caption-meta">
+              <span>Founder &amp; Lead Engineer</span>
+              <span>2023—Present</span>
+            </div>
+            <Link href="/projects/lynx" className="hero-caption-link">
+              Open case study <span aria-hidden="true">→</span>
             </Link>
           </div>
 
           <div className="hero-hotspot-layer" aria-hidden={!hotspotsAvailable}>
-            {activeHotspots.map((hotspot) => (
+            {hotspots.map((hotspot, index) => (
               <span
                 key={`${hotspot.id}-marker`}
+                data-node={hotspot.id}
+                data-label={hotspot.label}
                 className={`inspection-marker ${hotspot.markerClass} ${
                   activeHotspot === hotspot.id ? "inspection-marker-active" : ""
                 }`}
+                style={
+                  ({
+                    "--node-opacity": isMobileStage
+                      ? mobileNodeOpacity(index)
+                      : desktopNodeOpacity(index)
+                  } as CSSProperties)
+                }
                 aria-hidden="true"
               >
               </span>
             ))}
-            {activeHotspots.map((hotspot) => (
+            {hotspots.map((hotspot) => (
               <button
                 key={hotspot.id}
                 type="button"
@@ -415,7 +410,7 @@ export function LynxHero() {
               preserveAspectRatio="none"
               aria-hidden="true"
             >
-              {activeHotspots.map((hotspot) => (
+              {hotspots.map((hotspot) => (
                 <polyline
                   key={`${hotspot.id}-leader`}
                   className={`hero-leader-line ${
@@ -426,7 +421,7 @@ export function LynxHero() {
                 />
               ))}
             </svg>
-            {activeHotspots.map((hotspot) => {
+            {hotspots.map((hotspot) => {
               const active = activeHotspot === hotspot.id;
               return (
                 <div
@@ -443,17 +438,10 @@ export function LynxHero() {
           </div>
         </div>
 
-        <button
-          type="button"
-          className={`scroll-cue ${scrollCueActive ? "scroll-cue-active" : ""} ${
-            displayProgress > 0.18 ? "opacity-0" : "opacity-100"
-          }`}
-          onClick={handleScrollCueClick}
-          aria-label="Scroll to inspect the LYNX leg module"
-        >
-          <span className="scroll-cue-chevron" aria-hidden="true" />
-          <span>Scroll to inspect</span>
-        </button>
+        <div className={`scroll-cue ${displayProgress > 0.18 ? "opacity-0" : "opacity-100"}`}>
+          <span className="scroll-cue-mark" aria-hidden="true" />
+          <span className="scroll-cue-label">Scroll to inspect</span>
+        </div>
       </div>
     </section>
   );
