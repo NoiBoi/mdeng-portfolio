@@ -4,7 +4,7 @@ import { ProjectCard } from "@/components/ProjectCard";
 import { ResearchSection } from "@/components/ResearchSection";
 import { SectionHeading } from "@/components/SectionHeading";
 import { Reveal } from "@/components/Reveal";
-import { selectedProjects } from "@/data/projects";
+import { engineeringProjects } from "@/data/projects";
 import { siteConfig } from "@/data/site";
 
 export default function Home() {
@@ -12,11 +12,13 @@ export default function Home() {
     <main>
       <LynxHero />
 
-      <section id="work" className="section-shell">
+      <ResearchSection />
+
+      <section id="work" className="section-shell border-t border-white/10">
         <SectionHeading
-          eyebrow="Selected Work"
-          title="Hardware projects, research tooling, and systems work."
-          description="A compact index of mechanical, manufacturing, robotics, propulsion, and research-tooling projects with real CAD, drawings, photos, and analysis figures."
+          eyebrow="Selected Engineering"
+          title="Team-built systems beyond the research lab."
+          description="Earlier work in motorsport and competitive robotics, focused on the parts, tooling, and production decisions I directly contributed."
         />
         <Reveal className="work-drawing-banner">
           <Image
@@ -28,13 +30,11 @@ export default function Home() {
           />
         </Reveal>
         <div className="grid auto-rows-auto gap-5 md:grid-cols-8">
-          {selectedProjects.map((project, index) => (
+          {engineeringProjects.map((project, index) => (
             <ProjectCard key={project.slug} project={project} index={index} />
           ))}
         </div>
       </section>
-
-      <ResearchSection />
 
       <section id="about" className="section-shell border-t border-white/10">
         <div className="about-grid">
@@ -43,22 +43,19 @@ export default function Home() {
           </Reveal>
           <Reveal className="about-statement">
             <p className="text-balance text-2xl leading-tight text-paper md:text-4xl lg:text-[2.75rem]">
-              I am a Purdue University student in Mechanical Engineering / Artificial
-              Intelligence & Machine Learning Minor, interested in the design and fabrication
-              of complex physical systems. My work spans robotics, advanced materials,
-              propulsion, composites, and the engineering process that turns CAD concepts into
-              real hardware.
+              Mechanical Engineering at Purdue, working across packaging, advanced materials,
+              and experimental systems.
             </p>
             <div className="about-meta">
               <div>
                 <p className="about-meta-label">Focus</p>
                 <p className="about-meta-text">
-                  Robotics / Materials / Propulsion / Manufacturing
+                  Packaging / Materials / Process / Reliability
                 </p>
               </div>
               <div>
                 <p className="about-meta-label">Method</p>
-                <p className="about-meta-text">CAD - analysis - prototype - fabrication - test</p>
+                <p className="about-meta-text">design — fabricate — characterize — model — iterate</p>
               </div>
             </div>
           </Reveal>
@@ -95,7 +92,7 @@ export default function Home() {
             <p className="mt-5 text-lg leading-7 text-muted">
               Purdue University
               <br />
-              Mechanical Engineering / AI and ML Minor
+              Mechanical Engineering
             </p>
           </Reveal>
           <Reveal className="flex flex-wrap gap-3 lg:justify-end" delay={100}>

@@ -6,14 +6,13 @@ import {
   type MouseEvent,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState
 } from "react";
 import { AnimatedWords } from "@/components/AnimatedWords";
 import { siteConfig } from "@/data/site";
 
-type AnnotationId = "belt" | "lightweighting" | "drive" | "actuator" | "architecture";
+type AnnotationId = "actuator" | "architecture" | "lightweighting" | "drive";
 
 type Hotspot = {
   id: AnnotationId;
@@ -27,49 +26,40 @@ type Hotspot = {
 
 const hotspots: Hotspot[] = [
   {
-    id: "belt",
-    ariaLabel: "Inspect the belt-driven joint module in the lower leg assembly",
-    label: "BELT-DRIVEN JOINT MODULE",
-    zoneClass: "left-[46%] top-[63%]",
-    markerClass: "left-[52.6%] top-[70.8%]",
-    annotationClass: "left-[61.5%] top-[78.2%]",
-    leaderPoints: "53.4,71.4 58.8,78.0 61.8,78.0"
-  },
-  {
-    id: "lightweighting",
-    ariaLabel: "Inspect the generative-design lightweighting structure in the central bracket",
-    label: "GENERATIVE-DESIGN LIGHTWEIGHTING",
-    zoneClass: "left-[43%] top-[37%]",
-    markerClass: "left-[48.8%] top-[43.0%]",
-    annotationClass: "left-[27.5%] top-[49.2%]",
-    leaderPoints: "47.9,43.6 40.2,49.0 27.8,49.0"
-  },
-  {
-    id: "drive",
-    ariaLabel: "Inspect the precision belt drive in the upper joint",
-    label: "PRECISION BELT DRIVE",
-    zoneClass: "left-[57%] top-[18%]",
-    markerClass: "left-[62.0%] top-[22.6%]",
-    annotationClass: "left-[69.5%] top-[19.0%]",
-    leaderPoints: "62.9,22.1 68.0,19.2 69.8,19.2"
-  },
-  {
     id: "actuator",
-    ariaLabel: "Inspect the actuator packaging in the upper leg module",
+    ariaLabel: "Inspect the upper actuator packaging",
     label: "ACTUATOR PACKAGING",
-    zoneClass: "left-[48%] top-[10%]",
-    markerClass: "left-[54.0%] top-[15.4%]",
-    annotationClass: "left-[31.0%] top-[16.0%]",
-    leaderPoints: "53.1,15.5 46.8,16.0 31.3,16.0"
+    zoneClass: "left-[58.75%] top-[15.0%]",
+    markerClass: "left-[63.0%] top-[19.5%]",
+    annotationClass: "left-[66.2%] top-[17.0%]",
+    leaderPoints: "63.5,19.5 65.0,17.7 66.5,17.7"
   },
   {
     id: "architecture",
-    ariaLabel: "Inspect the modular leg architecture through the vertical side plate",
+    ariaLabel: "Inspect the modular upper-leg architecture",
     label: "MODULAR LEG ARCHITECTURE",
-    zoneClass: "left-[60%] top-[40%]",
-    markerClass: "left-[65.6%] top-[47.5%]",
-    annotationClass: "left-[72.0%] top-[47.0%]",
-    leaderPoints: "66.6,47.5 70.6,47.0 72.3,47.0"
+    zoneClass: "left-[49.55%] top-[10.3%]",
+    markerClass: "left-[53.8%] top-[14.8%]",
+    annotationClass: "left-[40.8%] top-[13.0%]",
+    leaderPoints: "53.3,14.8 48.7,13.7 41.1,13.7"
+  },
+  {
+    id: "lightweighting",
+    ariaLabel: "Inspect the generative-lightweighting side structure",
+    label: "GENERATIVE LIGHTWEIGHTING",
+    zoneClass: "left-[53.95%] top-[43.7%]",
+    markerClass: "left-[58.2%] top-[48.2%]",
+    annotationClass: "left-[62.0%] top-[45.9%]",
+    leaderPoints: "58.7,48.2 60.4,46.6 62.3,46.6"
+  },
+  {
+    id: "drive",
+    ariaLabel: "Inspect the lower precision belt drive",
+    label: "PRECISION BELT DRIVE",
+    zoneClass: "left-[55.75%] top-[65.5%]",
+    markerClass: "left-[60.0%] top-[70.0%]",
+    annotationClass: "left-[63.8%] top-[71.6%]",
+    leaderPoints: "60.5,70.0 62.2,71.7 64.1,71.7"
   }
 ];
 
@@ -175,31 +165,14 @@ export function LynxHero() {
 
   const displayProgress = reducedMotion ? 0.6 : progress;
   const introOut = smoothstep(0.18, 0.29, displayProgress);
-  const fullscreen = smoothstep(0.22, 0.52, displayProgress);
-  const mediaBlend = smoothstep(0.24, 0.54, displayProgress);
+  const fullscreen = smoothstep(0.18, 0.38, displayProgress);
+  const mediaBlend = displayProgress <= 0.28 ? 0 : smoothstep(0.34, 0.56, displayProgress);
   const overlayIn = smoothstep(0.52, 0.64, displayProgress);
   const overlayOut = smoothstep(0.84, 0.94, displayProgress);
   const exit = smoothstep(0.84, 1, displayProgress);
   const overlayOpacity = reducedMotion ? 1 : overlayIn * (1 - overlayOut);
   const hotspotsAvailable =
     !reducedMotion && displayProgress > 0.52 && displayProgress < 0.92;
-
-  const planeGeometry = useMemo(() => {
-    const startWidth = Math.min(viewport.width * 0.56, 900);
-    const startHeight = startWidth / 1.45;
-    const pageInset = Math.max(-18, (viewport.width - 1500) / 2 - 8);
-    const startLeft = viewport.width - pageInset - startWidth;
-    const startTop = viewport.height * 0.145;
-    const width = lerp(startWidth, viewport.width, fullscreen);
-    const height = lerp(startHeight, viewport.height, fullscreen);
-
-    return {
-      left: lerp(startLeft, 0, fullscreen),
-      top: lerp(startTop, 0, fullscreen),
-      width,
-      height
-    };
-  }, [fullscreen, viewport.height, viewport.width]);
 
   const onPointerMove = useCallback(
     (event: React.PointerEvent<HTMLElement>) => {
@@ -243,16 +216,17 @@ export function LynxHero() {
     "--marker-opacity": activeHotspot ? 0.18 : overlayOpacity,
     "--art-x": `${pointer.x * 6}px`,
     "--art-y": `${pointer.y * 4}px`,
-    "--transparent-opacity": 1 - mediaBlend,
+    "--hero-stage-x": `${lerp(viewport.width * 0.18, 0, fullscreen)}px`,
+    "--transparent-opacity": 1,
     "--background-opacity": mediaBlend,
-    "--hero-media-scale": lerp(1.58, 1, fullscreen)
+    "--hero-media-scale": lerp(0.78, 0.96, fullscreen)
   } as CSSProperties;
 
   const planeStyle = {
-    left: `${planeGeometry.left}px`,
-    top: `${planeGeometry.top - exit * viewport.height * 0.025}px`,
-    width: `${planeGeometry.width}px`,
-    height: `${planeGeometry.height}px`,
+    left: 0,
+    top: `${exit * viewport.height * -0.025}px`,
+    width: `${viewport.width}px`,
+    height: `${viewport.height}px`,
     opacity: 1 - exit * 0.24,
     transform: `scale(${1 - exit * 0.035})`
   } as CSSProperties;
@@ -268,24 +242,40 @@ export function LynxHero() {
         <div className="technical-backdrop" aria-hidden="true" />
 
         <div className="hero-copy" aria-hidden={introOut > 0.96}>
-          <p className="hero-reveal section-label">Purdue University</p>
-          <p className="hero-name hero-reveal hero-delay-1">
-            <AnimatedWords text="Matthew Deng" />
-          </p>
+          <div
+            className="hero-name hero-reveal hero-delay-1"
+            role="img"
+            aria-label="Matthew Deng"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="hero-name-image hero-name-image-matthew"
+              src="/assets/identity/matthew-wordmark.png"
+              alt=""
+              aria-hidden="true"
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="hero-name-image hero-name-image-deng"
+              src="/assets/identity/deng-wordmark.png"
+              alt=""
+              aria-hidden="true"
+            />
+          </div>
           <h1
             id="hero-title"
             className="hero-title hero-reveal hero-delay-2 mt-5 text-balance text-5xl font-semibold leading-[1.02] text-paper md:text-6xl xl:text-[4.9rem]"
           >
-            <AnimatedWords text="Engineering systems from CAD to fabricated hardware." startDelay={210} />
+            <AnimatedWords text="Mechanical Engineering at Purdue." startDelay={210} />
           </h1>
           <p className="hero-reveal hero-delay-3 mt-7 max-w-xl text-lg leading-8 text-muted">
             <AnimatedWords
-              text="Robotics, advanced materials, propulsion, and manufacturing at Purdue University."
+              text="Packaging / materials / experimental systems"
               startDelay={430}
             />
           </p>
           <p className="hero-reveal hero-delay-4 mt-7 max-w-2xl font-mono text-[0.68rem] font-bold uppercase leading-5 text-dim">
-            Mechanical Engineering / Artificial Intelligence and Machine Learning Minor / 4.00 GPA
+            4.00 GPA
           </p>
           <div className="hero-reveal hero-delay-5 mt-8 flex flex-wrap gap-3">
             <Link href="/#work" onClick={handleJumpToWork} className="button-primary">
@@ -303,6 +293,10 @@ export function LynxHero() {
           onPointerMove={onPointerMove}
           onPointerLeave={resetPointer}
         >
+          <div className="hero-image-layer hero-image-layer-background" aria-hidden="true">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={siteConfig.heroMediaSrc} alt="" />
+          </div>
           <div className="hero-image-layer hero-image-layer-transparent">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -310,13 +304,9 @@ export function LynxHero() {
               alt="LYNX Mk.1 leg module render"
             />
           </div>
-          <div className="hero-image-layer hero-image-layer-background" aria-hidden="true">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={siteConfig.heroMediaSrc} alt="" />
-          </div>
           <div className="hero-image-vignette" aria-hidden="true" />
 
-          <p className="hero-archive-label">LYNX MK1 / LEG MODULE RENDER</p>
+          <p className="hero-archive-label">FEATURED ARTIFACT / LYNX MK.1 LEG MODULE</p>
           <p className="hero-inspect-prompt">Hover components to inspect</p>
 
           <div className="hero-caption" aria-hidden={overlayOpacity < 0.08}>

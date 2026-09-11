@@ -21,6 +21,13 @@ export type Project = {
   tags: string[];
   metrics?: string[];
   featured?: boolean;
+  homepage?: boolean;
+  homepageGroup?: "research" | "engineering";
+  homepageTitle?: string;
+  homepageMeta?: string;
+  homepageDescription?: string;
+  homepageTags?: string[];
+  homepageHideMedia?: boolean;
   mediaLabels: string[];
   cardMedia?: ProjectMedia;
   media?: ProjectMedia[];
@@ -108,11 +115,153 @@ export const projects: Project[] = [
     ],
   },
   {
+    title: "CoSMAP - Thermomechanical Packaging Characterization",
+    slug: "cosmap-thermomechanical-packaging-characterization",
+    category: "Semiconductor Packaging / Reliability",
+    yearStatus: "Current research",
+    homepageTitle: "Thermomechanical Packaging",
+    homepageGroup: "research",
+    homepageMeta: "CoSMAP / 2026—",
+    homepageDescription:
+      "Thermomechanical characterization for advanced packaging using optical metrology and mechanical testing.",
+    homepageTags: ["Packaging", "Metrology", "Reliability"],
+    role: "Undergraduate Researcher",
+    description:
+      "Developing experimental workflows for temperature-dependent warpage, displacement, and mechanical reliability characterization in advanced semiconductor packaging.",
+    tags: ["Advanced Packaging", "Optical Metrology", "Thermomechanical Reliability", "MATLAB", "Experimental Design"],
+    mediaLabels: ["Experimental Characterization Workflow"],
+    details: [
+      "Current work in the CoSMAP Lab centers on advanced semiconductor packaging, thermomechanical behavior, and the experimental methods required to measure physical response repeatably."
+    ],
+    detailSections: [
+      {
+        heading: "Research scope",
+        paragraphs: [
+          "The research focuses on temperature-dependent warpage, displacement, and mechanical reliability in advanced packaging structures. Work is ongoing, with emphasis on establishing defensible test methods rather than claiming final reliability conclusions."
+        ]
+      },
+      {
+        heading: "Optical and thermal characterization",
+        paragraphs: [
+          "Temperature-dependent displacement and warpage workflows are being developed around Keyence VK-X3000 optical metrology and thermal-chamber integration. Fixture design, measurement consistency, and repeatable data collection are central constraints."
+        ]
+      },
+      {
+        heading: "Mechanical and dynamic testing",
+        paragraphs: [
+          "Experimental work includes designing or supporting fixturing for four-point bend and solder-joint shear testing, along with Optomet 3D laser vibrometry and Lansmont shock testing.",
+          "These activities remain at different stages of development and support; the page does not imply that every planned test has produced a completed result."
+        ]
+      },
+      {
+        heading: "Analysis and current status",
+        paragraphs: [
+          "MATLAB-based analysis supports processing and comparison of experimental data. Longer-term work is directed toward careful model-to-experiment correlation as repeatable datasets become available."
+        ]
+      }
+    ],
+    cardSize: "wide"
+  },
+  {
+    title: "Automated Powder Dispensing - Process Equipment Development",
+    slug: "icon-automated-powder-dispensing",
+    category: "ICoN Programmable Cloud Lab",
+    yearStatus: "In development",
+    homepageTitle: "Automated Powder Dispensing",
+    homepageGroup: "research",
+    homepageMeta: "ICoN Programmable Cloud Lab / 2026—",
+    homepageDescription:
+      "Automated powder-dispensing hardware for controlled and repeatable materials-synthesis workflows.",
+    homepageTags: ["Automation", "Process Equipment", "Prototyping"],
+    role: "Undergraduate Researcher",
+    description:
+      "Developing automated powder-dispensing hardware to improve control and repeatability in materials-synthesis workflows.",
+    tags: ["Laboratory Automation", "Process Equipment", "Mechanism Design", "Prototyping", "Repeatability"],
+    mediaLabels: ["Powder Dispenser Architecture"],
+    details: [
+      "The ICoN Programmable Cloud Lab project applies hands-on powder-processing experience to laboratory automation and purpose-built process equipment."
+    ],
+    detailSections: [
+      {
+        heading: "Process objective",
+        paragraphs: [
+          "Manual precursor preparation exposes sources of variability in powder handling and dosing. The equipment concept is intended to make those steps more controlled and repeatable within future automated synthesis workflows."
+        ]
+      },
+      {
+        heading: "Equipment architecture",
+        paragraphs: [
+          "Current concepts combine precision axial positioning with rotary or agitation mechanisms, cartridge and nozzle geometry, and controlled dosing. Each mechanism is being considered as part of a complete powder-handling system rather than as an isolated printed component."
+        ]
+      },
+      {
+        heading: "Hardware iteration and status",
+        paragraphs: [
+          "Development is focused on architecture, prototyping, and understanding how mechanical choices affect powder flow and repeatability. Characterization and broader automation integration remain ongoing; this page does not claim a completed dispensing or synthesis platform."
+        ]
+      }
+    ],
+    cardSize: "standard"
+  },
+  {
+    title: "MAXCalc - Synthesis Planning & Experimental Analysis",
+    slug: "maxcalc-synthesis-planning-analysis",
+    category: "Engineering Software / Materials",
+    yearStatus: "Active development",
+    homepageTitle: "MAXCalc",
+    homepageGroup: "research",
+    homepageMeta: "LSML / 2026—",
+    homepageDescription:
+      "Synthesis-planning and VNA/EMI analysis tools built around laboratory workflows.",
+    homepageTags: ["Materials", "Scientific Computing", "Analysis"],
+    role: "Developer",
+    description:
+      "A domain-specific engineering platform translating MAX-phase synthesis and VNA/EMI characterization workflows into practical calculations and analysis tools.",
+    tags: ["MAX Phases", "Precursor Balancing", "Synthesis Planning", "VNA / EMI", "Scientific Computing"],
+    mediaLabels: ["Synthesis Planning Workflow"],
+    details: [
+      "MAXCalc translates laboratory synthesis and characterization workflows into a purpose-built engineering tool for planning experiments and processing results."
+    ],
+    detailSections: [
+      {
+        heading: "Engineering objective",
+        paragraphs: [
+          "The tool reduces repeated manual calculation while keeping synthesis assumptions and precursor choices visible to the researcher. Its structure was informed by real formulation, stoichiometry, and powder-processing work across multiple MAX-phase systems."
+        ]
+      },
+      {
+        heading: "Synthesis planning",
+        paragraphs: [
+          "MAX composition parsing, precursor selection and balancing, route solving, and practical weighing outputs support the path from a target formula to a laboratory batch plan."
+        ]
+      },
+      {
+        heading: "Characterization analysis",
+        paragraphs: [
+          "VNA and EMI data-processing functions extend MAXCalc from synthesis planning into characterization and measured performance analysis."
+        ]
+      },
+      {
+        heading: "Validation and status",
+        paragraphs: [
+          "Calculations and outputs are being checked against active laboratory methods and prior hand calculations so the tool remains useful at the bench. Development is ongoing."
+        ]
+      }
+    ],
+    cardSize: "standard"
+  },
+  {
     title: "Aluminum V-Jaw Fixture - Materials-Processing Tooling",
     slug: "aluminum-v-jaw-fixture",
     category: "Manufacturing / Research Tooling",
     yearStatus: "Machined / validated",
     role: "Designer and Fabricator",
+    homepageTitle: "Aluminum V-Jaw Fixture",
+    homepageGroup: "research",
+    homepageDescription:
+      "Machined fixture developed through printed prototypes for repeatable MAX-sample processing.",
+    homepageTags: ["CAD", "CNC", "DFM"],
+    homepageHideMedia: true,
     description:
       "Iterative fixture development for clamping circular materials samples during pass-through milling, progressing from 3D-printed prototypes to a machinable aluminum design and standalone technical drawing.",
     tags: ["CAD", "DFM", "Fixture Design", "CNC", "Additive Prototyping"],
@@ -223,6 +372,11 @@ export const projects: Project[] = [
     category: "Composites / Motorsport",
     yearStatus: "Selected work",
     role: "Aerodynamics Subteam Engineer",
+    homepageTitle: "Purdue Electric Racing",
+    homepageGroup: "engineering",
+    homepageDescription:
+      "Composite aero manufacturing, resin-infusion tooling, and supporting mechanical design.",
+    homepageTags: ["Composites", "Tooling", "FSAE"],
     description:
       "Aerodynamic component and composite-manufacturing work for a Formula SAE team, including resin-infusion workflow support and FDM tooling for vacuum processes.",
     tags: ["Composites", "FDM", "Aerodynamics", "Manufacturing"],
@@ -299,6 +453,7 @@ export const projects: Project[] = [
     category: "Propulsion",
     yearStatus: "Selected work",
     role: "Mechanical & Analysis Contributor",
+    homepage: false,
     description:
       "Takeoff performance, structural screening, dynamic reed-valve modeling, and safety-planning support for a student pulsejet UAV project.",
     tags: ["Propulsion", "MATLAB", "Structural Analysis", "Systems Integration"],
@@ -374,6 +529,11 @@ export const projects: Project[] = [
     category: "Robotics",
     yearStatus: "Team 868",
     role: "Mechanical Lead / Mentor",
+    homepageTitle: "FRC / Team 868",
+    homepageGroup: "engineering",
+    homepageDescription:
+      "Mechanical design and fabrication across several years of competitive robotics.",
+    homepageTags: ["Robotics", "Manufacturing", "Leadership"],
     description:
       "Mechanical subsystem design, fabrication, and cross-functional leadership for Team 868, including CAD and machining mentorship.",
     tags: ["Robotics", "CAD", "Manufacturing", "Leadership"],
@@ -424,7 +584,9 @@ export const projects: Project[] = [
   }
 ];
 
-export const selectedProjects = projects.filter((project) => !project.featured);
+export const engineeringProjects = projects.filter(
+  (project) => project.homepageGroup === "engineering" && project.homepage !== false
+);
 
 export function getProject(slug: string) {
   return projects.find((project) => project.slug === slug);

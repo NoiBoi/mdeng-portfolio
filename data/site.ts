@@ -13,5 +13,5 @@ export const siteConfig = {
   headshotSrc: "/assets/portrait/matthew-deng-headshot.png",
   purdueLogoSrc: "/assets/brand/purdue-primary-mark.webp",
   description:
-    "Engineering portfolio for Matthew Deng, a Purdue mechanical engineering student focused on robotics, advanced materials, propulsion, and manufacturing."
+    "Engineering portfolio for Matthew Deng, a Purdue mechanical engineering student working across semiconductor packaging, process development, experimental reliability, and advanced materials."
 } as const;
