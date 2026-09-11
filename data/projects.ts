@@ -28,10 +28,11 @@ export type Project = {
   homepageDescription?: string;
   homepageTags?: string[];
   homepageHideMedia?: boolean;
+  logoSrc?: string;
   mediaLabels: string[];
   cardMedia?: ProjectMedia;
   media?: ProjectMedia[];
-  galleryLayout?: "standard" | "per" | "pulsejet" | "frc" | "v-jaw";
+  galleryLayout?: "standard" | "per" | "pulsejet" | "frc" | "v-jaw" | "maxcalc";
   details: string[];
   detailSections?: ProjectDetailSection[];
   cardSize?: "wide" | "tall" | "standard";
@@ -115,20 +116,20 @@ export const projects: Project[] = [
     ],
   },
   {
-    title: "CoSMAP - Thermomechanical Packaging Characterization",
+    title: "CoSMAP - Packaging Characterization & Reliability Testing",
     slug: "cosmap-thermomechanical-packaging-characterization",
     category: "Semiconductor Packaging / Reliability",
     yearStatus: "Current research",
-    homepageTitle: "Thermomechanical Packaging",
+    homepageTitle: "Characterization & Testing",
     homepageGroup: "research",
     homepageMeta: "CoSMAP / 2026—",
     homepageDescription:
-      "Thermomechanical characterization for advanced packaging using optical metrology and mechanical testing.",
+      "Physical characterization for advanced packaging using optical metrology, mechanical testing, and purpose-built fixtures.",
     homepageTags: ["Packaging", "Metrology", "Reliability"],
     role: "Undergraduate Researcher",
     description:
       "Developing experimental workflows for temperature-dependent warpage, displacement, and mechanical reliability characterization in advanced semiconductor packaging.",
-    tags: ["Advanced Packaging", "Optical Metrology", "Thermomechanical Reliability", "MATLAB", "Experimental Design"],
+    tags: ["Advanced Packaging", "Optical Metrology", "Mechanical Testing", "Thermomechanical Reliability", "Experimental Design"],
     mediaLabels: ["Experimental Characterization Workflow"],
     details: [
       "Current work in the CoSMAP Lab centers on advanced semiconductor packaging, thermomechanical behavior, and the experimental methods required to measure physical response repeatably."
@@ -153,10 +154,66 @@ export const projects: Project[] = [
           "These activities remain at different stages of development and support; the page does not imply that every planned test has produced a completed result."
         ]
       },
+    ],
+    cardSize: "wide"
+  },
+  {
+    title: "CoSMAP - Innolot Solder-Joint Creep Modeling & Analysis",
+    slug: "cosmap-innolot-creep-modeling-analysis",
+    category: "Semiconductor Packaging / Creep Modeling",
+    yearStatus: "Short-term model / 2026",
+    homepageTitle: "Creep Modeling & Analysis",
+    homepageGroup: "research",
+    homepageMeta: "CoSMAP / 2026",
+    homepageDescription:
+      "Short-term Innolot solder-joint creep modeling with whole-specimen validation and uncertainty analysis.",
+    homepageTags: ["Creep", "MATLAB", "Model Validation"],
+    role: "Research Analysis & Model Development",
+    description:
+      "A bounded interpolation model for short-term Innolot solder-joint creep, developed from raw tester records through data reduction, candidate-model comparison, whole-specimen validation, and uncertainty analysis.",
+    tags: ["Solder-Joint Creep", "MATLAB", "Nonlinear Regression", "Cross-Validation", "Uncertainty Analysis"],
+    metrics: [
+      "23 retained short-term creep tests",
+      "30-60 °C / 50-90 N measured test matrix",
+      "0.251 median leave-one-specimen-out normalized RMSE",
+      "100 / 100 whole-specimen bootstrap refits converged"
+    ],
+    mediaLabels: ["Creep Records", "Model Comparison", "Cross-Validation", "Uncertainty"],
+    details: [
+      "The analysis asks a deliberately limited question: how well can short-term creep strain be interpolated inside the measured stress-temperature-time domain? It does not treat a fitted equation as evidence of long-duration constitutive behavior or failure life."
+    ],
+    detailSections: [
       {
-        heading: "Analysis and current status",
+        heading: "Dataset and reduction",
         paragraphs: [
-          "MATLAB-based analysis supports processing and comparison of experimental data. Longer-term work is directed toward careful model-to-experiment correlation as repeatable datasets become available."
+          "The retained dataset contains 23 constant-load tests at nominal temperatures of 30, 45, and 60 °C and forces from 50 to 90 N. Force and displacement were converted to equivalent joint stress and engineering shear strain using the eight-joint specimen geometry.",
+          "Each record was zeroed at detected load onset, screened for nonfinite samples, and reduced to one-second means before fitting. Two 60 °C, 90 N tests that entered rapid tertiary acceleration were retained for separate analysis but excluded from the ordinary global fit."
+        ]
+      },
+      {
+        heading: "Model comparison and selection",
+        paragraphs: [
+          "Findley, Burgers-type, and power-linear forms were first compared on individual records. Power-linear and Burgers-type equations described individual curves better than the simple Findley form, but that result did not establish an independently identifiable steady-rate term across specimens.",
+          "Four nested global forms were then compared using leave-one-specimen-out validation. The selected four-parameter primary-creep law had a median normalized RMSE of 0.251 and no parameter at a bound. More complex forms produced little practical validation benefit and less stable parameter behavior."
+        ]
+      },
+      {
+        heading: "Whole-specimen validation",
+        paragraphs: [
+          "Validation withheld complete specimens rather than random time points. This prevents measurements sharing the same geometry, mounting, zeroing, and drift from appearing in both training and validation data.",
+          "One hundred whole-specimen bootstrap refits were used to separate uncertainty in the fitted mean from the much wider variability expected for a future specimen. At 35 MPa, 45 °C, and 6 h, the fitted mean strain was 0.0440; the fitted-mean 95% interval was 0.0400 to 0.0516, while the approximate new-specimen interval was 0.0129 to 0.1468."
+        ]
+      },
+      {
+        heading: "Tertiary acceleration",
+        paragraphs: [
+          "The two 60 °C, 90 N records entered tertiary acceleration near 3.1 h and then terminated near the displacement-sensor limit at approximately 3.9 h. They did not reach rupture, so the analysis reports an operational acceleration onset rather than a failure-time result."
+        ]
+      },
+      {
+        heading: "Model boundary",
+        paragraphs: [
+          "The MATLAB predictor is restricted to exploratory interpolation over the measured short-term domain, approximately 0-6 h, 30-60 °C, and 25-46 MPa. It is not a lifetime law, design allowable, rupture model, or FEA material card."
         ]
       }
     ],
@@ -214,11 +271,64 @@ export const projects: Project[] = [
     homepageDescription:
       "Synthesis-planning and VNA/EMI analysis tools built around laboratory workflows.",
     homepageTags: ["Materials", "Scientific Computing", "Analysis"],
+    logoSrc: "/assets/maxcalc/maxcalc-logo.svg",
     role: "Developer",
     description:
       "A domain-specific engineering platform translating MAX-phase synthesis and VNA/EMI characterization workflows into practical calculations and analysis tools.",
     tags: ["MAX Phases", "Precursor Balancing", "Synthesis Planning", "VNA / EMI", "Scientific Computing"],
-    mediaLabels: ["Synthesis Planning Workflow"],
+    mediaLabels: ["Recipe Workspace", "Precursor Route", "Site Descriptors", "Comparison", "EMI Analysis", "Publication Output"],
+    media: [
+      {
+        src: "/assets/maxcalc/calculation-workspace.png",
+        alt: "MAXCalc recipe workspace showing a mixed-metal 413 MAX formula, normalized site occupancy, and final precursor weighing results.",
+        caption: "Auditable recipe workspace — target definition, normalized composition, and final weighing result",
+        fit: "contain",
+        tone: "cad"
+      },
+      {
+        src: "/assets/maxcalc/precursor-route.png",
+        alt: "MAXCalc precursor-route editor with aluminum, carbon, niobium, tantalum, titanium, and vanadium inputs.",
+        caption: "Precursor-route editor with purity assumptions and rounding review kept visible",
+        fit: "contain",
+        tone: "cad"
+      },
+      {
+        src: "/assets/maxcalc/site-descriptors.png",
+        alt: "MAXCalc site descriptor interface for M, A, and X site composition and calculation controls.",
+        caption: "Explicit M, A, and X site occupancy with dataset and solver controls",
+        fit: "contain",
+        tone: "cad"
+      },
+      {
+        src: "/assets/maxcalc/recipe-comparison.png",
+        alt: "MAXCalc comparison view showing deterministic differences across related TiVNb MAX-phase recipes.",
+        caption: "Recipe comparison — arithmetic differences are separated from claims of scientific quality",
+        fit: "contain",
+        tone: "cad"
+      },
+      {
+        src: "/assets/maxcalc/emi-dataset-validation.png",
+        alt: "MAXCalc EMI analyzer showing imported Ka-band datasets with measurement-quality warnings and metadata.",
+        caption: "EMI dataset intake with per-file metadata, validity screening, and measurement-quality warnings",
+        fit: "contain",
+        tone: "cad"
+      },
+      {
+        src: "/assets/maxcalc/publication-plot-formatting.png",
+        alt: "MAXCalc publication plot controls for labels, axes, uncertainty, line styles, and export dimensions.",
+        caption: "Publication controls change figure presentation without altering analysis data",
+        fit: "contain",
+        tone: "cad"
+      },
+      {
+        src: "/assets/maxcalc/print-output.png",
+        alt: "MAXCalc print-ready weighing sheets for two saved MAX-phase recipes.",
+        caption: "Print-ready weighing sheets retain formulas, masses, verification state, and engine provenance",
+        fit: "contain",
+        tone: "document"
+      }
+    ],
+    galleryLayout: "maxcalc",
     details: [
       "MAXCalc translates laboratory synthesis and characterization workflows into a purpose-built engineering tool for planning experiments and processing results."
     ],

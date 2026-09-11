@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { BackToWorkLink } from "@/components/BackToWorkLink";
 import { ProjectMedia } from "@/components/ProjectMedia";
@@ -60,6 +61,19 @@ function getMediaPlacement(layout = "standard", index: number) {
     return placements[index] ?? { aspect: "wide", className: "" };
   }
 
+  if (layout === "maxcalc") {
+    const placements = [
+      { aspect: "wide", className: "md:col-span-6" },
+      { aspect: "tall", className: "md:col-span-3" },
+      { aspect: "tall", className: "md:col-span-3" },
+      { aspect: "panorama", className: "md:col-span-6" },
+      { aspect: "wide", className: "md:col-span-6" },
+      { aspect: "panorama", className: "md:col-span-6" },
+      { aspect: "tall", className: "md:col-span-4 md:col-start-2" }
+    ] as const;
+    return placements[index] ?? { aspect: "wide", className: "md:col-span-3" };
+  }
+
   return { aspect: index === 0 ? "wide" : "square", className: "md:col-span-3" } as const;
 }
 
@@ -89,13 +103,26 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   return (
     <main className="min-h-screen pt-28">
       <section className="section-shell !pt-10">
-        <BackToWorkLink />
+        <BackToWorkLink section={project.homepageGroup === "research" ? "research" : "work"} />
 
         <Reveal className="project-intro mt-12 max-w-5xl">
           <p className="section-label">{project.category}</p>
-          <h1 className="mt-5 max-w-4xl text-balance text-4xl font-semibold leading-[1.06] text-paper sm:text-5xl md:text-6xl">
-            {project.title}
-          </h1>
+          <div className="project-title-lockup">
+            {project.logoSrc ? (
+              <Image
+                src={project.logoSrc}
+                alt=""
+                width={96}
+                height={96}
+                unoptimized
+                aria-hidden="true"
+                className="project-title-logo"
+              />
+            ) : null}
+            <h1 className="max-w-4xl text-balance text-4xl font-semibold leading-[1.06] text-paper sm:text-5xl md:text-6xl">
+              {project.title}
+            </h1>
+          </div>
           <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[0.75rem] font-bold uppercase text-dim">
             <span>{project.role}</span>
             <span>{project.yearStatus}</span>

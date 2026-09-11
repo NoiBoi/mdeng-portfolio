@@ -80,20 +80,27 @@ export function ResearchSection() {
           role="Undergraduate Researcher / 2026—"
           title="Advanced packaging reliability"
           links={
-            <ResearchLink
-              href="/projects/cosmap-thermomechanical-packaging-characterization"
-              label="Thermomechanical Packaging"
-              meta="Characterization / Modeling"
-            />
+            <>
+              <ResearchLink
+                href="/projects/cosmap-thermomechanical-packaging-characterization"
+                label="Characterization & Testing"
+                meta="Metrology / Reliability"
+              />
+              <ResearchLink
+                href="/projects/cosmap-innolot-creep-modeling-analysis"
+                label="Creep Modeling & Analysis"
+                meta="MATLAB / Validation"
+              />
+            </>
           }
         >
           <p>
-            Experimental and computational work on temperature-dependent deformation in electronic packaging,
-            including optical metrology, mechanical testing, and short-term solder-joint creep modeling.
+            Research on temperature-dependent deformation and reliability in electronic packaging, divided between
+            physical characterization workflows and a separate short-term solder-joint modeling effort.
           </p>
           <p>
-            Current analysis emphasizes whole-specimen validation, uncertainty, and bounded interpolation rather
-            than extrapolated lifetime or material-property claims.
+            The two records keep planned testing distinct from completed analysis while preserving their shared
+            packaging-reliability context.
           </p>
         </ResearchProgram>
 

@@ -111,14 +111,22 @@ function useViewportSize() {
 
 export function LynxHero() {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const archiveLabelRef = useRef<HTMLParagraphElement | null>(null);
   const pointerTargetRef = useRef({ x: 0, y: 0 });
   const pointerCurrentRef = useRef({ x: 0, y: 0 });
   const pointerRafRef = useRef(0);
   const [progress, setProgress] = useState(0);
   const [pointer, setPointer] = useState({ x: 0, y: 0 });
   const [activeHotspot, setActiveHotspot] = useState<AnnotationId | null>(null);
+  const [archiveLabelWidth, setArchiveLabelWidth] = useState(300);
   const reducedMotion = useReducedMotion();
   const viewport = useViewportSize();
+  const isMobileStage = viewport.width <= 900;
+
+  useEffect(() => {
+    const width = archiveLabelRef.current?.getBoundingClientRect().width;
+    if (width) setArchiveLabelWidth(width);
+  }, [viewport.width]);
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -164,15 +172,29 @@ export function LynxHero() {
   }, [reducedMotion]);
 
   const displayProgress = reducedMotion ? 0.6 : progress;
-  const introOut = smoothstep(0.18, 0.29, displayProgress);
-  const fullscreen = smoothstep(0.18, 0.38, displayProgress);
-  const mediaBlend = displayProgress <= 0.28 ? 0 : smoothstep(0.34, 0.56, displayProgress);
-  const overlayIn = smoothstep(0.52, 0.64, displayProgress);
-  const overlayOut = smoothstep(0.84, 0.94, displayProgress);
-  const exit = smoothstep(0.84, 1, displayProgress);
+  const introOut = smoothstep(isMobileStage ? 0.08 : 0.18, isMobileStage ? 0.22 : 0.29, displayProgress);
+  const fullscreen = smoothstep(isMobileStage ? 0.12 : 0.18, isMobileStage ? 0.36 : 0.38, displayProgress);
+  const mediaBlend = displayProgress <= (isMobileStage ? 0.3 : 0.28)
+    ? 0
+    : smoothstep(isMobileStage ? 0.3 : 0.34, isMobileStage ? 0.46 : 0.56, displayProgress);
+  const archiveOut = smoothstep(isMobileStage ? 0.06 : 0.52, isMobileStage ? 0.16 : 0.64, displayProgress);
+  const mobileNodeExit = 1 - smoothstep(0.82, 0.88, displayProgress);
+  const mobileNodeOpacity = (index: number) =>
+    smoothstep(0.38 + index * 0.09, 0.43 + index * 0.09, displayProgress) * mobileNodeExit;
+  const desktopNodeExit = 1 - smoothstep(0.84, 0.94, displayProgress);
+  const desktopNodeOpacity = (index: number) =>
+    smoothstep(0.5 + index * 0.04, 0.54 + index * 0.04, displayProgress) * desktopNodeExit;
+  const overlayIn = smoothstep(isMobileStage ? 0.88 : 0.52, isMobileStage ? 0.92 : 0.64, displayProgress);
+  const overlayOut = smoothstep(isMobileStage ? 0.965 : 0.84, isMobileStage ? 0.99 : 0.94, displayProgress);
+  const exit = smoothstep(isMobileStage ? 0.97 : 0.84, 1, displayProgress);
   const overlayOpacity = reducedMotion ? 1 : overlayIn * (1 - overlayOut);
+  const archiveMove = smoothstep(0.3, 0.62, displayProgress);
+  const desktopGutter = Math.max(24, (viewport.width - 1680) / 2 + 24);
+  const overlayInset = clamp(viewport.width * 0.02, 20, 36);
+  const archiveStart = viewport.width - desktopGutter - archiveLabelWidth;
+  const archiveEnd = viewport.width - overlayInset - archiveLabelWidth;
   const hotspotsAvailable =
-    !reducedMotion && displayProgress > 0.52 && displayProgress < 0.92;
+    !isMobileStage && !reducedMotion && displayProgress > 0.52 && displayProgress < 0.92;
 
   const onPointerMove = useCallback(
     (event: React.PointerEvent<HTMLElement>) => {
@@ -211,21 +233,29 @@ export function LynxHero() {
     "--intro-y": `${introOut * -18}px`,
     "--overlay-opacity": overlayOpacity,
     "--overlay-y": `${(1 - overlayOpacity) * 14}px`,
-    "--archive-opacity": 1 - overlayIn,
+    "--archive-opacity": isMobileStage ? 1 - archiveOut : 1 - overlayOut,
+    "--archive-left": `${lerp(archiveStart, archiveEnd, archiveMove)}px`,
+    "--archive-y": `${lerp(0, -26, archiveMove)}px`,
     "--inspect-opacity": activeHotspot ? 0 : overlayOpacity,
-    "--marker-opacity": activeHotspot ? 0.18 : overlayOpacity,
     "--art-x": `${pointer.x * 6}px`,
     "--art-y": `${pointer.y * 4}px`,
-    "--hero-stage-x": `${lerp(viewport.width * 0.18, 0, fullscreen)}px`,
+    "--hero-stage-x": `${lerp(
+      viewport.width * (isMobileStage ? -0.045 : 0.18),
+      isMobileStage ? viewport.width * -0.045 : 0,
+      fullscreen
+    )}px`,
+    "--hero-stage-y": `${lerp(isMobileStage ? viewport.height * 0.315 : 0, 0, fullscreen)}px`,
+    "--authentic-shadow-opacity": (isMobileStage ? 1 : 0.72) * mediaBlend,
+    "--authentic-shadow-y": `${lerp(59, 72, fullscreen)}%`,
     "--transparent-opacity": 1,
     "--background-opacity": mediaBlend,
-    "--hero-media-scale": lerp(0.78, 0.96, fullscreen)
+    "--hero-media-scale": lerp(isMobileStage ? 1.5 : 0.78, isMobileStage ? 3.05 : 0.96, fullscreen)
   } as CSSProperties;
 
   const planeStyle = {
-    left: 0,
+    left: isMobileStage ? -16 : 0,
     top: `${exit * viewport.height * -0.025}px`,
-    width: `${viewport.width}px`,
+    width: `${viewport.width + (isMobileStage ? 32 : 0)}px`,
     height: `${viewport.height}px`,
     opacity: 1 - exit * 0.24,
     transform: `scale(${1 - exit * 0.035})`
@@ -242,6 +272,7 @@ export function LynxHero() {
         <div className="technical-backdrop" aria-hidden="true" />
 
         <div className="hero-copy" aria-hidden={introOut > 0.96}>
+          <div className="hero-type-flare" aria-hidden="true" />
           <div
             className="hero-name hero-reveal hero-delay-1"
             role="img"
@@ -287,12 +318,20 @@ export function LynxHero() {
           </div>
         </div>
 
+        <p ref={archiveLabelRef} className="hero-archive-label">
+          FEATURED ARTIFACT / LYNX MK.1 LEG MODULE
+        </p>
+
         <div
           className="hero-art-plane"
           style={planeStyle}
           onPointerMove={onPointerMove}
           onPointerLeave={resetPointer}
         >
+          <div className="hero-image-layer hero-image-layer-shadow" aria-hidden="true">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={siteConfig.heroMediaSrc} alt="" />
+          </div>
           <div className="hero-image-layer hero-image-layer-background" aria-hidden="true">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={siteConfig.heroMediaSrc} alt="" />
@@ -306,26 +345,42 @@ export function LynxHero() {
           </div>
           <div className="hero-image-vignette" aria-hidden="true" />
 
-          <p className="hero-archive-label">FEATURED ARTIFACT / LYNX MK.1 LEG MODULE</p>
           <p className="hero-inspect-prompt">Hover components to inspect</p>
 
           <div className="hero-caption" aria-hidden={overlayOpacity < 0.08}>
-            <p className="font-mono text-[0.7rem] font-bold uppercase text-paper">
-              LYNX - Modular 12-DOF Quadruped Robot
-            </p>
-            <p className="mt-2 text-sm text-muted">Founder & Lead Engineer / 2023-Present</p>
-            <Link href="/projects/lynx" className="mt-5 inline-flex button-secondary">
-              View project
+            <div className="hero-caption-kicker">
+              <span>01</span>
+              <span>Featured system</span>
+            </div>
+            <div className="hero-caption-heading">
+              <p>LYNX</p>
+              <p>Modular 12-DOF quadruped leg</p>
+            </div>
+            <div className="hero-caption-meta">
+              <span>Founder &amp; Lead Engineer</span>
+              <span>2023—Present</span>
+            </div>
+            <Link href="/projects/lynx" className="hero-caption-link">
+              Open case study <span aria-hidden="true">→</span>
             </Link>
           </div>
 
           <div className="hero-hotspot-layer" aria-hidden={!hotspotsAvailable}>
-            {hotspots.map((hotspot) => (
+            {hotspots.map((hotspot, index) => (
               <span
                 key={`${hotspot.id}-marker`}
+                data-node={hotspot.id}
+                data-label={hotspot.label}
                 className={`inspection-marker ${hotspot.markerClass} ${
                   activeHotspot === hotspot.id ? "inspection-marker-active" : ""
                 }`}
+                style={
+                  ({
+                    "--node-opacity": isMobileStage
+                      ? mobileNodeOpacity(index)
+                      : desktopNodeOpacity(index)
+                  } as CSSProperties)
+                }
                 aria-hidden="true"
               >
               </span>
@@ -385,7 +440,7 @@ export function LynxHero() {
 
         <div className={`scroll-cue ${displayProgress > 0.18 ? "opacity-0" : "opacity-100"}`}>
           <span className="scroll-cue-mark" aria-hidden="true" />
-          <span>Scroll to inspect</span>
+          <span className="scroll-cue-label">Scroll to inspect</span>
         </div>
       </div>
     </section>
