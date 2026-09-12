@@ -122,6 +122,10 @@ export function LynxHero() {
   const reducedMotion = useReducedMotion();
   const viewport = useViewportSize();
   const isMobileStage = viewport.width <= 900;
+  const isCompactLandscape =
+    isMobileStage && viewport.width > viewport.height && viewport.height <= 520;
+  const isShortPortrait =
+    isMobileStage && viewport.height > viewport.width && viewport.height <= 740;
 
   useEffect(() => {
     const width = archiveLabelRef.current?.getBoundingClientRect().width;
@@ -178,15 +182,14 @@ export function LynxHero() {
     ? 0
     : smoothstep(isMobileStage ? 0.3 : 0.34, isMobileStage ? 0.46 : 0.56, displayProgress);
   const archiveOut = smoothstep(isMobileStage ? 0.06 : 0.52, isMobileStage ? 0.16 : 0.64, displayProgress);
-  const mobileNodeExit = 1 - smoothstep(0.82, 0.88, displayProgress);
+  const mobileNodeExit = 1 - smoothstep(0.72, 0.76, displayProgress);
   const mobileNodeOpacity = (index: number) =>
     smoothstep(0.38 + index * 0.09, 0.43 + index * 0.09, displayProgress) * mobileNodeExit;
   const desktopNodeExit = 1 - smoothstep(0.84, 0.94, displayProgress);
   const desktopNodeOpacity = (index: number) =>
     smoothstep(0.5 + index * 0.04, 0.54 + index * 0.04, displayProgress) * desktopNodeExit;
-  const overlayIn = smoothstep(isMobileStage ? 0.88 : 0.52, isMobileStage ? 0.92 : 0.64, displayProgress);
-  const overlayOut = smoothstep(isMobileStage ? 0.965 : 0.84, isMobileStage ? 0.99 : 0.94, displayProgress);
-  const exit = smoothstep(isMobileStage ? 0.97 : 0.84, 1, displayProgress);
+  const overlayIn = smoothstep(isMobileStage ? 0.76 : 0.52, isMobileStage ? 0.8 : 0.64, displayProgress);
+  const overlayOut = smoothstep(isMobileStage ? 0.965 : 0.84, isMobileStage ? 0.985 : 0.94, displayProgress);
   const overlayOpacity = reducedMotion ? 1 : overlayIn * (1 - overlayOut);
   const archiveMove = smoothstep(0.3, 0.62, displayProgress);
   const desktopGutter = Math.max(24, (viewport.width - 1680) / 2 + 24);
@@ -195,6 +198,16 @@ export function LynxHero() {
   const archiveEnd = viewport.width - overlayInset - archiveLabelWidth;
   const hotspotsAvailable =
     !isMobileStage && !reducedMotion && displayProgress > 0.52 && displayProgress < 0.92;
+  const mobileStageX = isCompactLandscape
+    ? viewport.width * 0.28
+    : viewport.width * (isShortPortrait ? 0.22 : 0.13);
+  const mobileStageY = isCompactLandscape
+    ? viewport.height * 0.02
+    : viewport.height * (isShortPortrait ? 0.32 : 0.4);
+  const mobileInitialScale = isCompactLandscape ? 0.72 : isShortPortrait ? 1 : 0.82;
+  const mobileFinalScale = isCompactLandscape ? 0.95 : 2.35;
+  const mobileEndStageX = viewport.width * (isCompactLandscape ? -0.018 : -0.045);
+  const mobileEndStageY = viewport.height * (isCompactLandscape ? 0.07 : 0.04);
 
   const onPointerMove = useCallback(
     (event: React.PointerEvent<HTMLElement>) => {
@@ -240,25 +253,24 @@ export function LynxHero() {
     "--art-x": `${pointer.x * 6}px`,
     "--art-y": `${pointer.y * 4}px`,
     "--hero-stage-x": `${lerp(
-      viewport.width * (isMobileStage ? -0.045 : 0.18),
-      isMobileStage ? viewport.width * -0.045 : 0,
+      isMobileStage ? mobileStageX : viewport.width * 0.18,
+      isMobileStage ? mobileEndStageX : 0,
       fullscreen
     )}px`,
-    "--hero-stage-y": `${lerp(isMobileStage ? viewport.height * 0.315 : 0, 0, fullscreen)}px`,
+    "--hero-stage-y": `${lerp(
+      isMobileStage ? mobileStageY : 0,
+      isMobileStage ? mobileEndStageY : 0,
+      fullscreen
+    )}px`,
     "--authentic-shadow-opacity": (isMobileStage ? 1 : 0.72) * mediaBlend,
     "--authentic-shadow-y": `${lerp(59, 72, fullscreen)}%`,
     "--transparent-opacity": 1,
     "--background-opacity": mediaBlend,
-    "--hero-media-scale": lerp(isMobileStage ? 1.5 : 0.78, isMobileStage ? 3.05 : 0.96, fullscreen)
-  } as CSSProperties;
-
-  const planeStyle = {
-    left: isMobileStage ? -16 : 0,
-    top: `${exit * viewport.height * -0.025}px`,
-    width: `${viewport.width + (isMobileStage ? 32 : 0)}px`,
-    height: `${viewport.height}px`,
-    opacity: 1 - exit * 0.24,
-    transform: `scale(${1 - exit * 0.035})`
+    "--hero-media-scale": lerp(
+      isMobileStage ? mobileInitialScale : 0.78,
+      isMobileStage ? mobileFinalScale : 0.96,
+      fullscreen
+    )
   } as CSSProperties;
 
   return (
@@ -324,7 +336,6 @@ export function LynxHero() {
 
         <div
           className="hero-art-plane"
-          style={planeStyle}
           onPointerMove={onPointerMove}
           onPointerLeave={resetPointer}
         >

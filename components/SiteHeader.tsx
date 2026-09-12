@@ -88,7 +88,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="hidden text-sm font-semibold text-muted transition-colors hover:text-paper focus-visible:focus-ring sm:inline-flex"
+              className="site-nav-link hidden text-sm font-semibold text-muted transition-colors hover:text-paper focus-visible:focus-ring sm:inline-flex"
             >
               {item.label}
             </Link>
