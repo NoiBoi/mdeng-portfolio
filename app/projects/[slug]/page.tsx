@@ -17,6 +17,7 @@ export function generateStaticParams() {
 }
 
 function getGalleryClass(layout = "standard") {
+  if (layout === "v-jaw") return "project-gallery project-gallery-v-jaw";
   if (layout === "frc") return "project-gallery project-gallery-frc";
   return "project-gallery";
 }
@@ -24,12 +25,12 @@ function getGalleryClass(layout = "standard") {
 function getMediaPlacement(layout = "standard", index: number) {
   if (layout === "v-jaw") {
     const placements = [
-      { aspect: "wide", className: "md:col-span-3" },
-      { aspect: "wide", className: "md:col-span-3" },
-      { aspect: "wide", className: "md:col-span-4" },
-      { aspect: "wide", className: "md:col-span-2" },
-      { aspect: "wide", className: "md:col-span-6" },
-      { aspect: "document", className: "md:col-span-6" }
+      { aspect: "landscape", className: "md:col-span-3 vjaw-media-v1" },
+      { aspect: "landscape", className: "md:col-span-3 vjaw-media-range" },
+      { aspect: "landscape", className: "md:col-span-3 vjaw-media-v2" },
+      { aspect: "landscape", className: "md:col-span-3 vjaw-media-detail" },
+      { aspect: "landscape", className: "md:col-span-3 vjaw-media-v3" },
+      { aspect: "landscape", className: "md:col-span-3 vjaw-media-drawing" }
     ] as const;
     return placements[index] ?? { aspect: "wide", className: "md:col-span-3" };
   }
@@ -101,8 +102,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   }
 
   return (
-    <main className="min-h-screen pt-28">
-      <section className="section-shell !pt-10">
+    <main className="project-page min-h-screen pt-28">
+      <section className="project-page-shell section-shell !pt-10">
         <BackToWorkLink section={project.homepageGroup === "research" ? "research" : "work"} />
 
         <Reveal className="project-intro mt-12 max-w-5xl">

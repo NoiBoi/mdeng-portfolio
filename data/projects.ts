@@ -408,7 +408,7 @@ export const projects: Project[] = [
         src: "/assets/v-jaw/vjaw-v2-ortho.png",
         alt: "V-jaw V2 orthographic CAD assembly with guide rods and central round sample.",
         caption: "V2 CAD assembly showing guide rods, jaw geometry, and early sample-holding layout.",
-        fit: "cover",
+        fit: "contain",
         tone: "cad"
       },
       {
@@ -422,7 +422,7 @@ export const projects: Project[] = [
         src: "/assets/v-jaw/vjaw-v3-ortho.png",
         alt: "V-jaw V3 orthographic CAD refinement with cleaner jaw geometry.",
         caption: "V3 refinement after real mill feedback on stiffness, access, and compactness.",
-        fit: "cover",
+        fit: "contain",
         tone: "cad"
       },
       {

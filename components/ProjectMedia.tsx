@@ -1,7 +1,7 @@
 import Image from "next/image";
 import type { ProjectMedia as ProjectMediaItem } from "@/data/projects";
 
-type MediaAspect = "wide" | "panorama" | "square" | "tall" | "document";
+type MediaAspect = "wide" | "panorama" | "landscape" | "square" | "tall" | "document";
 
 type ProjectMediaProps = {
   media: ProjectMediaItem;
@@ -13,6 +13,7 @@ type ProjectMediaProps = {
 const aspectClasses: Record<MediaAspect, string> = {
   wide: "aspect-[16/9]",
   panorama: "aspect-[4/1]",
+  landscape: "aspect-[4/3]",
   square: "aspect-square",
   tall: "aspect-[4/5]",
   document: "aspect-[1.62/1]"

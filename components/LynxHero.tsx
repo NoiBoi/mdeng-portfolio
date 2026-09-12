@@ -111,14 +111,12 @@ function useViewportSize() {
 
 export function LynxHero() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const archiveLabelRef = useRef<HTMLParagraphElement | null>(null);
   const pointerTargetRef = useRef({ x: 0, y: 0 });
   const pointerCurrentRef = useRef({ x: 0, y: 0 });
   const pointerRafRef = useRef(0);
   const [progress, setProgress] = useState(0);
   const [pointer, setPointer] = useState({ x: 0, y: 0 });
   const [activeHotspot, setActiveHotspot] = useState<AnnotationId | null>(null);
-  const [archiveLabelWidth, setArchiveLabelWidth] = useState(300);
   const reducedMotion = useReducedMotion();
   const viewport = useViewportSize();
   const isMobileStage = viewport.width <= 900;
@@ -126,11 +124,6 @@ export function LynxHero() {
     isMobileStage && viewport.width > viewport.height && viewport.height <= 520;
   const isShortPortrait =
     isMobileStage && viewport.height > viewport.width && viewport.height <= 740;
-
-  useEffect(() => {
-    const width = archiveLabelRef.current?.getBoundingClientRect().width;
-    if (width) setArchiveLabelWidth(width);
-  }, [viewport.width]);
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -193,9 +186,6 @@ export function LynxHero() {
   const overlayOpacity = reducedMotion ? 1 : overlayIn * (1 - overlayOut);
   const archiveMove = smoothstep(0.3, 0.62, displayProgress);
   const desktopGutter = Math.max(24, (viewport.width - 1680) / 2 + 24);
-  const overlayInset = clamp(viewport.width * 0.02, 20, 36);
-  const archiveStart = viewport.width - desktopGutter - archiveLabelWidth;
-  const archiveEnd = viewport.width - overlayInset - archiveLabelWidth;
   const hotspotsAvailable =
     !isMobileStage && !reducedMotion && displayProgress > 0.52 && displayProgress < 0.92;
   const mobileStageX = isCompactLandscape
@@ -241,14 +231,29 @@ export function LynxHero() {
     }, 80);
   }, []);
 
+  const handleJumpToInspection = useCallback(() => {
+    const node = sectionRef.current;
+    if (!node) return;
+
+    const rect = node.getBoundingClientRect();
+    const sectionTop = window.scrollY + rect.top;
+    const scrollable = Math.max(0, node.offsetHeight - window.innerHeight);
+    const targetProgress = isMobileStage ? 0.69 : 0.68;
+
+    window.scrollTo({
+      top: sectionTop + scrollable * targetProgress,
+      behavior: reducedMotion ? "auto" : "smooth"
+    });
+  }, [isMobileStage, reducedMotion]);
+
   const heroStyle = {
     "--intro-opacity": 1 - introOut,
     "--intro-y": `${introOut * -18}px`,
     "--overlay-opacity": overlayOpacity,
     "--overlay-y": `${(1 - overlayOpacity) * 14}px`,
     "--archive-opacity": isMobileStage ? 1 - archiveOut : 1 - overlayOut,
-    "--archive-left": `${lerp(archiveStart, archiveEnd, archiveMove)}px`,
-    "--archive-y": `${lerp(0, -26, archiveMove)}px`,
+    "--archive-right": `${desktopGutter}px`,
+    "--archive-y": `${lerp(0, -8, archiveMove)}px`,
     "--inspect-opacity": activeHotspot ? 0 : overlayOpacity,
     "--art-x": `${pointer.x * 6}px`,
     "--art-y": `${pointer.y * 4}px`,
@@ -330,7 +335,7 @@ export function LynxHero() {
           </div>
         </div>
 
-        <p ref={archiveLabelRef} className="hero-archive-label">
+        <p className="hero-archive-label">
           FEATURED ARTIFACT / LYNX MK.1 LEG MODULE
         </p>
 
@@ -449,10 +454,16 @@ export function LynxHero() {
           </div>
         </div>
 
-        <div className={`scroll-cue ${displayProgress > 0.18 ? "opacity-0" : "opacity-100"}`}>
+        <button
+          type="button"
+          className={`scroll-cue ${displayProgress > 0.18 ? "opacity-0" : "opacity-100"}`}
+          onClick={handleJumpToInspection}
+          disabled={displayProgress > 0.18}
+          aria-label="Scroll to the LYNX inspection stage"
+        >
           <span className="scroll-cue-mark" aria-hidden="true" />
           <span className="scroll-cue-label">Scroll to inspect</span>
-        </div>
+        </button>
       </div>
     </section>
   );
