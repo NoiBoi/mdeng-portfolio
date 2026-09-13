@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { type MouseEvent, useEffect, useState } from "react";
+import { type MouseEvent, useEffect, useRef, useState } from "react";
 import { siteConfig } from "@/data/site";
 
 const navItems = [
@@ -16,6 +16,7 @@ const navItems = [
 export function SiteHeader() {
   const pathname = usePathname();
   const [showBrand, setShowBrand] = useState(false);
+  const showBrandRef = useRef(false);
 
   const handleBrandClick = (event: MouseEvent<HTMLAnchorElement>) => {
     if (window.location.pathname !== "/") return;
@@ -26,6 +27,9 @@ export function SiteHeader() {
 
   useEffect(() => {
     let frame = 0;
+    let heroTop = 0;
+    let heroScrollable = 1;
+    let recenterEnd = 1;
 
     const clamp = (value: number, min: number, max: number) =>
       Math.min(max, Math.max(min, value));
@@ -33,6 +37,15 @@ export function SiteHeader() {
     const smoothstep = (start: number, end: number, value: number) => {
       const amount = clamp((value - start) / (end - start), 0, 1);
       return amount * amount * (3 - 2 * amount);
+    };
+
+    const updateMetrics = () => {
+      if (pathname !== "/") return;
+      const hero = document.querySelector<HTMLElement>(".hero-section");
+      if (!hero) return;
+      heroTop = window.scrollY + hero.getBoundingClientRect().top;
+      heroScrollable = Math.max(1, hero.offsetHeight - window.innerHeight);
+      recenterEnd = (hero.offsetHeight - window.innerHeight * 0.5) / heroScrollable;
     };
 
     const update = () => {
@@ -44,31 +57,28 @@ export function SiteHeader() {
       let heroProgress = onHome ? 0 : 1;
 
       if (onHome && width > 900) {
-        const hero = document.querySelector<HTMLElement>(".hero-section");
-        if (hero) {
-          const rect = hero.getBoundingClientRect();
-          const scrollable = Math.max(1, hero.offsetHeight - window.innerHeight);
-          const rawHeroProgress = -rect.top / scrollable;
-          const recenterEnd =
-            (hero.offsetHeight - window.innerHeight * 0.5) / scrollable;
-          heroProgress = clamp(rawHeroProgress, 0, 1);
-          const expand = smoothstep(0.16, 0.56, heroProgress);
-          const recenter = smoothstep(0.92, recenterEnd, rawHeroProgress);
-          const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const rawHeroProgress = (window.scrollY - heroTop) / heroScrollable;
+        heroProgress = clamp(rawHeroProgress, 0, 1);
+        const expand = smoothstep(0.16, 0.56, heroProgress);
+        const recenter = smoothstep(0.92, recenterEnd, rawHeroProgress);
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-          headerExpansion = reducedMotion
-            ? rawHeroProgress >= 0.56 && rawHeroProgress < 0.92
-              ? 1
-              : 0
-            : expand * (1 - recenter);
-        }
+        headerExpansion = reducedMotion
+          ? rawHeroProgress >= 0.56 && rawHeroProgress < 0.92
+            ? 1
+            : 0
+          : expand * (1 - recenter);
       }
 
       if (onHome && width <= 900) {
         heroProgress = clamp(window.scrollY / Math.max(1, window.innerHeight * 2.25), 0, 1);
       }
 
-      setShowBrand(!onHome || heroProgress >= (width > 900 ? 0.56 : 0.22));
+      const nextShowBrand = !onHome || heroProgress >= (width > 900 ? 0.56 : 0.22);
+      if (showBrandRef.current !== nextShowBrand) {
+        showBrandRef.current = nextShowBrand;
+        setShowBrand(nextShowBrand);
+      }
 
       const outerInset = clamp(width * 0.02, 20, 36);
       const currentInset = centeredInset + (outerInset - centeredInset) * headerExpansion;
@@ -80,15 +90,21 @@ export function SiteHeader() {
       frame = requestAnimationFrame(update);
     };
 
+    const onResize = () => {
+      updateMetrics();
+      requestUpdate();
+    };
+
+    updateMetrics();
     update();
     window.addEventListener("scroll", requestUpdate, { passive: true });
-    window.addEventListener("resize", requestUpdate);
+    window.addEventListener("resize", onResize);
     window.addEventListener("hashchange", requestUpdate);
     window.addEventListener("popstate", requestUpdate);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", requestUpdate);
-      window.removeEventListener("resize", requestUpdate);
+      window.removeEventListener("resize", onResize);
       window.removeEventListener("hashchange", requestUpdate);
       window.removeEventListener("popstate", requestUpdate);
       document.documentElement.style.removeProperty("--hero-frame-inset");

@@ -18,6 +18,8 @@ type Hotspot = {
   id: AnnotationId;
   ariaLabel: string;
   label: string;
+  mobileSourceX: number;
+  mobileSourceY: number;
   zoneClass: string;
   markerClass: string;
   annotationClass: string;
@@ -29,6 +31,8 @@ const hotspots: Hotspot[] = [
     id: "actuator",
     ariaLabel: "Inspect the upper actuator packaging",
     label: "ACTUATOR PACKAGING",
+    mobileSourceX: 0.638,
+    mobileSourceY: 0.195,
     zoneClass: "left-[58.75%] top-[15.0%]",
     markerClass: "left-[63.0%] top-[19.5%]",
     annotationClass: "left-[66.2%] top-[17.0%]",
@@ -38,6 +42,8 @@ const hotspots: Hotspot[] = [
     id: "architecture",
     ariaLabel: "Inspect the modular upper-leg architecture",
     label: "MODULAR LEG ARCHITECTURE",
+    mobileSourceX: 0.545,
+    mobileSourceY: 0.148,
     zoneClass: "left-[49.55%] top-[10.3%]",
     markerClass: "left-[53.8%] top-[14.8%]",
     annotationClass: "left-[40.8%] top-[13.0%]",
@@ -47,6 +53,8 @@ const hotspots: Hotspot[] = [
     id: "lightweighting",
     ariaLabel: "Inspect the generative-lightweighting side structure",
     label: "GENERATIVE LIGHTWEIGHTING",
+    mobileSourceX: 0.6,
+    mobileSourceY: 0.484,
     zoneClass: "left-[53.95%] top-[43.7%]",
     markerClass: "left-[58.2%] top-[48.2%]",
     annotationClass: "left-[62.0%] top-[45.9%]",
@@ -56,6 +64,8 @@ const hotspots: Hotspot[] = [
     id: "drive",
     ariaLabel: "Inspect the lower precision belt drive",
     label: "PRECISION BELT DRIVE",
+    mobileSourceX: 0.549,
+    mobileSourceY: 0.7,
     zoneClass: "left-[55.75%] top-[65.5%]",
     markerClass: "left-[60.0%] top-[70.0%]",
     annotationClass: "left-[63.8%] top-[71.6%]",
@@ -74,6 +84,63 @@ function lerp(start: number, end: number, amount: number) {
 function smoothstep(edge0: number, edge1: number, value: number) {
   const x = clamp((value - edge0) / (edge1 - edge0), 0, 1);
   return x * x * (3 - 2 * x);
+}
+
+function getContainedMediaSize(width: number, height: number) {
+  return {
+    width: Math.min(width, height * (16 / 9)),
+    height: Math.min(height, width * (9 / 16))
+  };
+}
+
+function getMobileHotspotPosition(
+  hotspot: Hotspot,
+  viewportWidth: number,
+  viewportHeight: number,
+  stageX: number,
+  stageY: number,
+  mediaScale: number
+) {
+  const media = getContainedMediaSize(viewportWidth, viewportHeight);
+  return {
+    left:
+      viewportWidth * 0.5 +
+      stageX +
+      (hotspot.mobileSourceX - 0.5) * media.width * mediaScale,
+    top:
+      viewportHeight * 0.5 +
+      stageY +
+      (hotspot.mobileSourceY - 0.5) * media.height * mediaScale
+  };
+}
+
+function getHeroMotion(progress: number, isMobile: boolean) {
+  const introOut = smoothstep(isMobile ? 0.08 : 0.18, isMobile ? 0.22 : 0.29, progress);
+  const fullscreen = smoothstep(isMobile ? 0.12 : 0.18, isMobile ? 0.36 : 0.38, progress);
+  const mediaBlend = progress <= (isMobile ? 0.3 : 0.28)
+    ? 0
+    : smoothstep(isMobile ? 0.3 : 0.34, isMobile ? 0.46 : 0.56, progress);
+  const archiveOut = smoothstep(isMobile ? 0.06 : 0.52, isMobile ? 0.16 : 0.64, progress);
+  const nodeExit = 1 - smoothstep(isMobile ? 0.72 : 0.84, isMobile ? 0.76 : 0.94, progress);
+  const nodeOpacities = Array.from({ length: hotspots.length }, (_, index) =>
+    smoothstep(
+      (isMobile ? 0.38 : 0.5) + index * (isMobile ? 0.09 : 0.04),
+      (isMobile ? 0.43 : 0.54) + index * (isMobile ? 0.09 : 0.04),
+      progress
+    ) * nodeExit
+  );
+  const overlayIn = smoothstep(isMobile ? 0.76 : 0.52, isMobile ? 0.8 : 0.64, progress);
+  const overlayOut = smoothstep(isMobile ? 0.965 : 0.84, isMobile ? 0.985 : 0.94, progress);
+
+  return {
+    introOut,
+    fullscreen,
+    mediaBlend,
+    archiveOut,
+    nodeOpacities,
+    overlayOut,
+    overlayOpacity: overlayIn * (1 - overlayOut)
+  };
 }
 
 function useReducedMotion() {
@@ -111,30 +178,163 @@ function useViewportSize() {
 
 export function LynxHero() {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const heroCopyRef = useRef<HTMLDivElement | null>(null);
+  const mobileCopyBottomRef = useRef(0);
   const pointerTargetRef = useRef({ x: 0, y: 0 });
   const pointerCurrentRef = useRef({ x: 0, y: 0 });
   const pointerRafRef = useRef(0);
-  const [progress, setProgress] = useState(0);
-  const [pointer, setPointer] = useState({ x: 0, y: 0 });
+  const hotspotsAvailableRef = useRef(false);
   const [activeHotspot, setActiveHotspot] = useState<AnnotationId | null>(null);
+  const [hotspotsAvailable, setHotspotsAvailable] = useState(false);
+  const [mobileCopyBottom, setMobileCopyBottom] = useState(0);
   const reducedMotion = useReducedMotion();
   const viewport = useViewportSize();
   const isMobileStage = viewport.width <= 900;
   const isCompactLandscape =
     isMobileStage && viewport.width > viewport.height && viewport.height <= 520;
-  const isShortPortrait =
-    isMobileStage && viewport.height > viewport.width && viewport.height <= 740;
+
+  useEffect(() => {
+    const copy = heroCopyRef.current;
+    const section = sectionRef.current;
+    const sticky = section?.querySelector<HTMLElement>(".hero-sticky");
+    if (!copy || !sticky) return;
+
+    let frame = 0;
+    const getBottomWithinSticky = (element: HTMLElement) => {
+      let top = 0;
+      let current: HTMLElement | null = element;
+
+      while (current && current !== sticky) {
+        top += current.offsetTop;
+        current = current.offsetParent as HTMLElement | null;
+      }
+
+      return top + element.offsetHeight;
+    };
+    const update = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const actionElements = Array.from(copy.querySelectorAll<HTMLElement>("a, button"));
+        const nextBottom = Math.max(
+          getBottomWithinSticky(copy),
+          ...actionElements.map(getBottomWithinSticky)
+        );
+        mobileCopyBottomRef.current = nextBottom;
+        setMobileCopyBottom((current) =>
+          Math.abs(current - nextBottom) < 0.5 ? current : nextBottom
+        );
+      });
+    };
+
+    const observer = new ResizeObserver(update);
+    observer.observe(copy);
+    copy.querySelectorAll<HTMLElement>("a, button").forEach((element) => observer.observe(element));
+    window.addEventListener("resize", update);
+    update();
+
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, []);
 
   useEffect(() => {
     if (reducedMotion) return;
 
+    const node = sectionRef.current;
+    if (!node) return;
+
+    const copy = node.querySelector<HTMLElement>(".hero-copy");
+    const caption = node.querySelector<HTMLElement>(".hero-caption");
+    const cue = node.querySelector<HTMLElement>(".scroll-cue");
+    const hotspotLayer = node.querySelector<HTMLElement>(".hero-hotspot-layer");
+    const markers = Array.from(node.querySelectorAll<HTMLElement>(".inspection-marker"));
+    const hotspotButtons = Array.from(node.querySelectorAll<HTMLButtonElement>(".hero-hotspot"));
+    let sectionTop = 0;
+    let scrollable = 1;
     let raf = 0;
+
+    const updateMetrics = () => {
+      sectionTop = window.scrollY + node.getBoundingClientRect().top;
+      scrollable = Math.max(1, node.offsetHeight - window.innerHeight);
+    };
+
     const update = () => {
-      const node = sectionRef.current;
-      if (!node) return;
-      const rect = node.getBoundingClientRect();
-      const scrollable = rect.height - window.innerHeight;
-      setProgress(clamp(-rect.top / scrollable, 0, 1));
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const isMobile = width <= 900;
+      const compactLandscape = isMobile && width > height && height <= 520;
+      const nextProgress = clamp((window.scrollY - sectionTop) / scrollable, 0, 1);
+      const motion = getHeroMotion(nextProgress, isMobile);
+      const initialScale = isMobile ? (compactLandscape ? 0.72 : 1) : 0.78;
+      const finalScale = isMobile ? (compactLandscape ? 0.95 : 2.35) : 0.96;
+      const containedMedia = getContainedMediaSize(width, height);
+      const anchorBottom = mobileCopyBottomRef.current || height * 0.62;
+      const initialX = isMobile ? width * (compactLandscape ? 0.28 : 0.15) : width * 0.18;
+      const finalX = isMobile ? width * (compactLandscape ? -0.018 : -0.045) : 0;
+      const initialY = isMobile
+        ? compactLandscape
+          ? height * 0.02
+          : anchorBottom - 35 + containedMedia.height * initialScale * 0.5 - height * 0.5
+        : 0;
+      const finalY = isMobile ? height * (compactLandscape ? 0.07 : 0.04) : 0;
+      const mediaScale = lerp(initialScale, finalScale, motion.fullscreen);
+      const stageX = lerp(initialX, finalX, motion.fullscreen);
+      const stageY = lerp(initialY, finalY, motion.fullscreen);
+      const nextHotspotsAvailable =
+        !isMobile && nextProgress > 0.52 && nextProgress < 0.92;
+      const style = node.style;
+
+      style.setProperty("--intro-opacity", `${1 - motion.introOut}`);
+      style.setProperty("--intro-y", `${motion.introOut * -18}px`);
+      style.setProperty("--overlay-opacity", `${motion.overlayOpacity}`);
+      style.setProperty("--overlay-y", `${(1 - motion.overlayOpacity) * 14}px`);
+      style.setProperty(
+        "--archive-opacity",
+        `${isMobile ? 1 - motion.archiveOut : 1 - motion.overlayOut}`
+      );
+      style.setProperty("--inspect-opacity", `${motion.overlayOpacity}`);
+      style.setProperty("--hero-stage-x", `${stageX}px`);
+      style.setProperty("--hero-stage-y", `${stageY}px`);
+      style.setProperty("--authentic-shadow-opacity", `${motion.mediaBlend}`);
+      style.setProperty("--background-opacity", `${motion.mediaBlend}`);
+      style.setProperty("--hero-media-scale", `${mediaScale}`);
+
+      copy?.setAttribute("aria-hidden", `${motion.introOut > 0.96}`);
+      caption?.setAttribute("aria-hidden", `${motion.overlayOpacity < 0.08}`);
+      hotspotLayer?.setAttribute("aria-hidden", `${!nextHotspotsAvailable}`);
+      hotspotButtons.forEach((button) => {
+        button.disabled = !nextHotspotsAvailable;
+      });
+      if (hotspotsAvailableRef.current !== nextHotspotsAvailable) {
+        hotspotsAvailableRef.current = nextHotspotsAvailable;
+        setHotspotsAvailable(nextHotspotsAvailable);
+      }
+      node.classList.toggle("hero-authentic-shadow", motion.mediaBlend > 0.9);
+      if (cue) cue.style.opacity = nextProgress > 0.18 ? "0" : "1";
+
+      markers.forEach((marker, index) => {
+        marker.style.setProperty("--node-opacity", `${motion.nodeOpacities[index] ?? 0}`);
+        if (!isMobile) {
+          marker.style.removeProperty("left");
+          marker.style.removeProperty("top");
+          return;
+        }
+
+        const hotspot = hotspots[index];
+        if (!hotspot) return;
+        const position = getMobileHotspotPosition(
+          hotspot,
+          width,
+          height,
+          stageX,
+          stageY,
+          mediaScale
+        );
+        marker.style.left = `${position.left}px`;
+        marker.style.top = `${position.top}px`;
+      });
     };
 
     const onScroll = () => {
@@ -142,60 +342,55 @@ export function LynxHero() {
       raf = requestAnimationFrame(update);
     };
 
+    const onResize = () => {
+      updateMetrics();
+      onScroll();
+    };
+
+    updateMetrics();
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onResize);
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onResize);
     };
-  }, [reducedMotion]);
+  }, [mobileCopyBottom, reducedMotion, viewport.height, viewport.width]);
 
-  useEffect(() => {
-    if (reducedMotion) return;
+  useEffect(() => () => cancelAnimationFrame(pointerRafRef.current), []);
 
-    const tick = () => {
-      const current = pointerCurrentRef.current;
-      const target = pointerTargetRef.current;
-      current.x += (target.x - current.x) * 0.1;
-      current.y += (target.y - current.y) * 0.1;
-      setPointer({ x: current.x, y: current.y });
-      pointerRafRef.current = requestAnimationFrame(tick);
-    };
-
-    pointerRafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(pointerRafRef.current);
-  }, [reducedMotion]);
-
-  const displayProgress = reducedMotion ? 0.6 : progress;
-  const introOut = smoothstep(isMobileStage ? 0.08 : 0.18, isMobileStage ? 0.22 : 0.29, displayProgress);
-  const fullscreen = smoothstep(isMobileStage ? 0.12 : 0.18, isMobileStage ? 0.36 : 0.38, displayProgress);
-  const mediaBlend = displayProgress <= (isMobileStage ? 0.3 : 0.28)
-    ? 0
-    : smoothstep(isMobileStage ? 0.3 : 0.34, isMobileStage ? 0.46 : 0.56, displayProgress);
-  const archiveOut = smoothstep(isMobileStage ? 0.06 : 0.52, isMobileStage ? 0.16 : 0.64, displayProgress);
-  const mobileNodeExit = 1 - smoothstep(0.72, 0.76, displayProgress);
-  const mobileNodeOpacity = (index: number) =>
-    smoothstep(0.38 + index * 0.09, 0.43 + index * 0.09, displayProgress) * mobileNodeExit;
-  const desktopNodeExit = 1 - smoothstep(0.84, 0.94, displayProgress);
-  const desktopNodeOpacity = (index: number) =>
-    smoothstep(0.5 + index * 0.04, 0.54 + index * 0.04, displayProgress) * desktopNodeExit;
-  const overlayIn = smoothstep(isMobileStage ? 0.76 : 0.52, isMobileStage ? 0.8 : 0.64, displayProgress);
-  const overlayOut = smoothstep(isMobileStage ? 0.965 : 0.84, isMobileStage ? 0.985 : 0.94, displayProgress);
-  const overlayOpacity = reducedMotion ? 1 : overlayIn * (1 - overlayOut);
-  const hotspotsAvailable =
-    !isMobileStage && !reducedMotion && displayProgress > 0.52 && displayProgress < 0.92;
+  const displayProgress = reducedMotion ? 0.6 : 0;
+  const motion = getHeroMotion(displayProgress, isMobileStage);
+  const {
+    introOut,
+    fullscreen,
+    mediaBlend,
+    archiveOut,
+    nodeOpacities,
+    overlayOut
+  } = motion;
+  const overlayOpacity = reducedMotion ? 1 : motion.overlayOpacity;
+  const mobileNodeOpacity = (index: number) => nodeOpacities[index] ?? 0;
+  const desktopNodeOpacity = mobileNodeOpacity;
   const mobileStageX = isCompactLandscape
     ? viewport.width * 0.28
-    : viewport.width * (isShortPortrait ? 0.22 : 0.13);
+    : viewport.width * 0.15;
+  const mobileInitialScale = isCompactLandscape ? 0.72 : 1;
+  const containedMedia = getContainedMediaSize(viewport.width, viewport.height);
+  const mobileAnchorBottom = mobileCopyBottom || viewport.height * 0.62;
   const mobileStageY = isCompactLandscape
     ? viewport.height * 0.02
-    : viewport.height * (isShortPortrait ? 0.32 : 0.4);
-  const mobileInitialScale = isCompactLandscape ? 0.72 : isShortPortrait ? 1 : 0.82;
+    : mobileAnchorBottom - 35 + containedMedia.height * mobileInitialScale * 0.5 - viewport.height * 0.5;
   const mobileFinalScale = isCompactLandscape ? 0.95 : 2.35;
+  const shadowScale = isMobileStage ? mobileFinalScale : 0.96;
   const mobileEndStageX = viewport.width * (isCompactLandscape ? -0.018 : -0.045);
   const mobileEndStageY = viewport.height * (isCompactLandscape ? 0.07 : 0.04);
+  const currentStageX = lerp(
+    isMobileStage ? mobileStageX : viewport.width * 0.18,
+    isMobileStage ? mobileEndStageX : 0,
+    fullscreen
+  );
   const currentStageY = lerp(
     isMobileStage ? mobileStageY : 0,
     isMobileStage ? mobileEndStageY : 0,
@@ -206,6 +401,44 @@ export function LynxHero() {
     isMobileStage ? mobileFinalScale : 0.96,
     fullscreen
   );
+  const mobileHotspotPositions = hotspots.map((hotspot) =>
+    getMobileHotspotPosition(
+      hotspot,
+      viewport.width,
+      viewport.height,
+      currentStageX,
+      currentStageY,
+      currentMediaScale
+    )
+  );
+
+  const startPointerAnimation = useCallback(() => {
+    if (pointerRafRef.current) return;
+
+    const tick = () => {
+      const current = pointerCurrentRef.current;
+      const target = pointerTargetRef.current;
+      const deltaX = target.x - current.x;
+      const deltaY = target.y - current.y;
+
+      if (Math.abs(deltaX) < 0.001 && Math.abs(deltaY) < 0.001) {
+        current.x = target.x;
+        current.y = target.y;
+        sectionRef.current?.style.setProperty("--art-x", `${target.x * 6}px`);
+        sectionRef.current?.style.setProperty("--art-y", `${target.y * 4}px`);
+        pointerRafRef.current = 0;
+        return;
+      }
+
+      current.x += deltaX * 0.1;
+      current.y += deltaY * 0.1;
+      sectionRef.current?.style.setProperty("--art-x", `${current.x * 6}px`);
+      sectionRef.current?.style.setProperty("--art-y", `${current.y * 4}px`);
+      pointerRafRef.current = requestAnimationFrame(tick);
+    };
+
+    pointerRafRef.current = requestAnimationFrame(tick);
+  }, []);
 
   const onPointerMove = useCallback(
     (event: React.PointerEvent<HTMLElement>) => {
@@ -215,17 +448,19 @@ export function LynxHero() {
         x: ((event.clientX - rect.left) / rect.width - 0.5) * 2,
         y: ((event.clientY - rect.top) / rect.height - 0.5) * 2
       };
+      startPointerAnimation();
       if (event.target instanceof Element && !event.target.closest(".hero-hotspot")) {
         setActiveHotspot(null);
       }
     },
-    [reducedMotion]
+    [reducedMotion, startPointerAnimation]
   );
 
   const resetPointer = useCallback(() => {
     pointerTargetRef.current = { x: 0, y: 0 };
+    startPointerAnimation();
     setActiveHotspot(null);
-  }, []);
+  }, [startPointerAnimation]);
 
   const handleJumpToWork = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -246,16 +481,17 @@ export function LynxHero() {
     "--overlay-y": `${(1 - overlayOpacity) * 14}px`,
     "--archive-opacity": isMobileStage ? 1 - archiveOut : 1 - overlayOut,
     "--inspect-opacity": activeHotspot ? 0 : overlayOpacity,
-    "--art-x": `${pointer.x * 6}px`,
-    "--art-y": `${pointer.y * 4}px`,
-    "--hero-stage-x": `${lerp(
-      isMobileStage ? mobileStageX : viewport.width * 0.18,
-      isMobileStage ? mobileEndStageX : 0,
-      fullscreen
-    )}px`,
+    "--art-x": "0px",
+    "--art-y": "0px",
+    "--hero-stage-x": `${currentStageX}px`,
     "--hero-stage-y": `${currentStageY}px`,
-    "--authentic-shadow-opacity": (isMobileStage ? 1 : 0.72) * mediaBlend,
-    "--authentic-shadow-y": `${lerp(59, 72, fullscreen)}%`,
+    "--authentic-shadow-opacity": mediaBlend,
+    "--authentic-shadow-x": `${viewport.width * 0.5}px`,
+    "--authentic-shadow-y": `${
+      viewport.height * 0.5 + containedMedia.height * shadowScale * 0.26
+    }px`,
+    "--authentic-shadow-width": `${containedMedia.width * shadowScale * 0.28}px`,
+    "--authentic-shadow-height": `${containedMedia.height * shadowScale * 0.14}px`,
     "--transparent-opacity": 1,
     "--background-opacity": mediaBlend,
     "--hero-media-scale": currentMediaScale
@@ -264,14 +500,14 @@ export function LynxHero() {
   return (
     <section
       ref={sectionRef}
-      className="hero-section"
+      className={`hero-section ${activeHotspot ? "hero-has-active" : ""}`}
       aria-labelledby="hero-title"
       style={heroStyle}
     >
       <div className="hero-sticky">
         <div className="technical-backdrop" aria-hidden="true" />
 
-        <div className="hero-copy" aria-hidden={introOut > 0.96}>
+        <div ref={heroCopyRef} className="hero-copy" aria-hidden={introOut > 0.96}>
           <div className="hero-type-flare" aria-hidden="true" />
           <div
             className="hero-name hero-reveal hero-delay-1"
@@ -329,17 +565,24 @@ export function LynxHero() {
         >
           <div className="hero-image-layer hero-image-layer-shadow" aria-hidden="true">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={siteConfig.heroMediaSrc} alt="" />
-          </div>
-          <div className="hero-image-layer hero-image-layer-background" aria-hidden="true">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={siteConfig.heroMediaSrc} alt="" />
+            <img
+              src={siteConfig.heroMediaSrc}
+              alt=""
+              width={1889}
+              height={1063}
+              decoding="async"
+              fetchPriority="low"
+            />
           </div>
           <div className="hero-image-layer hero-image-layer-transparent">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={siteConfig.heroTransparentMediaSrc}
               alt="LYNX Mk.1 leg module render"
+              width={1889}
+              height={1063}
+              decoding="async"
+              fetchPriority="high"
             />
           </div>
           <div className="hero-image-vignette" aria-hidden="true" />
@@ -377,7 +620,13 @@ export function LynxHero() {
                   ({
                     "--node-opacity": isMobileStage
                       ? mobileNodeOpacity(index)
-                      : desktopNodeOpacity(index)
+                      : desktopNodeOpacity(index),
+                    ...(isMobileStage
+                      ? {
+                          left: `${mobileHotspotPositions[index]?.left ?? 0}px`,
+                          top: `${mobileHotspotPositions[index]?.top ?? 0}px`
+                        }
+                      : {})
                   } as CSSProperties)
                 }
                 aria-hidden="true"

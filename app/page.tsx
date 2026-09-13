@@ -80,6 +80,7 @@ export default function Home() {
                 width={112}
                 height={34}
                 className="about-identity-mark"
+                style={{ width: "auto", height: "auto" }}
               />
               <div>
                 <p className="about-identity-name">Matthew Deng</p>
