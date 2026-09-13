@@ -4,11 +4,18 @@ export type ProjectMedia = {
   caption: string;
   fit?: "cover" | "contain";
   tone?: "photo" | "cad" | "document";
+  unoptimized?: boolean;
 };
 
 export type ProjectDetailSection = {
   heading: string;
   paragraphs: string[];
+};
+
+export type ProjectCodeExcerpt = {
+  label: string;
+  language: string;
+  code: string;
 };
 
 export type Project = {
@@ -32,7 +39,8 @@ export type Project = {
   mediaLabels: string[];
   cardMedia?: ProjectMedia;
   media?: ProjectMedia[];
-  galleryLayout?: "standard" | "per" | "pulsejet" | "frc" | "v-jaw" | "maxcalc";
+  galleryLayout?: "standard" | "per" | "pulsejet" | "frc" | "v-jaw" | "maxcalc" | "icon" | "creep";
+  codeExcerpt?: ProjectCodeExcerpt;
   details: string[];
   detailSections?: ProjectDetailSection[];
   cardSize?: "wide" | "tall" | "standard";
@@ -122,36 +130,50 @@ export const projects: Project[] = [
     yearStatus: "Current research",
     homepageTitle: "Characterization & Testing",
     homepageGroup: "research",
-    homepageMeta: "CoSMAP / 2026—",
+    homepageMeta: "CoSMAP / 2026 to Present",
     homepageDescription:
-      "Physical characterization for advanced packaging using optical metrology, mechanical testing, and purpose-built fixtures.",
+      "Fixture-led warpage, bend, shear, vibrometry, and shock workflows connecting 3D metrology with MATLAB and ANSYS.",
     homepageTags: ["Packaging", "Metrology", "Reliability"],
     role: "Undergraduate Researcher",
     description:
-      "Developing experimental workflows for temperature-dependent warpage, displacement, and mechanical reliability characterization in advanced semiconductor packaging.",
+      "Fixture design, 3D metrology, MATLAB analysis, and ANSYS modeling for thermomechanical warpage, bend, shear, vibration, and shock characterization in advanced packaging.",
     tags: ["Advanced Packaging", "Optical Metrology", "Mechanical Testing", "Thermomechanical Reliability", "Experimental Design"],
+    metrics: [
+      "Keyence VK-X3000 in-situ thermal-warpage workflow",
+      "Custom thermal-chamber fixturing for optical access and specimen positioning",
+      "MATLAB analysis and ANSYS thermomechanical correlation",
+      "75% reduction in unusable four-point-bend results: 0.4 to 0.1 errors per test"
+    ],
     mediaLabels: ["Experimental Characterization Workflow"],
     details: [
-      "Current work in the CoSMAP Lab centers on advanced semiconductor packaging, thermomechanical behavior, and the experimental methods required to measure physical response repeatably."
+      "Fixture design ties the CoSMAP work together: each setup has to locate the specimen repeatably, preserve access for the measurement system, and produce data that can be compared with a mechanical model."
     ],
     detailSections: [
       {
-        heading: "Research scope",
+        heading: "In-situ warpage characterization",
         paragraphs: [
-          "The research focuses on temperature-dependent warpage, displacement, and mechanical reliability in advanced packaging structures. Work is ongoing, with emphasis on establishing defensible test methods rather than claiming final reliability conclusions."
+          "I co-own development of an in-situ thermomechanical warpage workflow built around a Keyence VK-X3000 and a custom thermal chamber. My fixture work inside the chamber focuses on optical access, controlled specimen positioning, and repeatable placement across temperature-dependent scans.",
+          "The setup is being developed as a measurement system rather than a loose collection of instruments: chamber geometry, line of sight, specimen support, thermal exposure, and scan repeatability all affect whether the resulting 3D surface data can support a defensible warpage result."
         ]
       },
       {
-        heading: "Optical and thermal characterization",
+        heading: "Metrology, MATLAB, and model correlation",
         paragraphs: [
-          "Temperature-dependent displacement and warpage workflows are being developed around Keyence VK-X3000 optical metrology and thermal-chamber integration. Fixture design, measurement consistency, and repeatable data collection are central constraints."
+          "I characterize temperature-dependent warpage and deformation from 3D metrology data, with MATLAB workflows used to quantify displacement, curvature, and thermal response across the measured surface.",
+          "ANSYS thermomechanical workflows provide a parallel model of the package response. The objective is to compare modeled and measured behavior, identify where fixture or boundary-condition assumptions matter, and improve the experimental and simulation workflows together."
         ]
       },
       {
-        heading: "Mechanical and dynamic testing",
+        heading: "Mechanical-test fixtures",
         paragraphs: [
-          "Experimental work includes designing or supporting fixturing for four-point bend and solder-joint shear testing, along with Optomet 3D laser vibrometry and Lansmont shock testing.",
-          "These activities remain at different stages of development and support; the page does not imply that every planned test has produced a completed result."
+          "I designed precision fixtures for four-point-bend and solder-joint shear testing, integrating specimen-locating features and sensor mounting into the test setup. The fixture geometry is intended to reduce setup variability while keeping loading and measurement interfaces accessible.",
+          "Iteration on the four-point-bend setup reduced unusable results from 0.4 to 0.1 errors per test, a 75% reduction. That result reflects fixture and workflow improvement rather than a change to the material being tested."
+        ]
+      },
+      {
+        heading: "Vibration and shock support",
+        paragraphs: [
+          "I also support Optomet 3D laser-vibrometry and Lansmont shock testing through calibration, experiment execution, and analysis of package displacement and shock response. This work extends the same fixture-and-measurement approach into dynamic loading, where alignment, sensor access, and test repeatability remain central constraints."
         ]
       },
     ],
@@ -166,7 +188,7 @@ export const projects: Project[] = [
     homepageGroup: "research",
     homepageMeta: "CoSMAP / 2026",
     homepageDescription:
-      "Short-term Innolot solder-joint creep modeling with whole-specimen validation and uncertainty analysis.",
+      "A 23-test Innolot creep model selected through whole-specimen validation, with uncertainty kept inside the measured domain.",
     homepageTags: ["Creep", "MATLAB", "Model Validation"],
     role: "Research Analysis & Model Development",
     description:
@@ -178,16 +200,76 @@ export const projects: Project[] = [
       "0.251 median leave-one-specimen-out normalized RMSE",
       "100 / 100 whole-specimen bootstrap refits converged"
     ],
-    mediaLabels: ["Creep Records", "Model Comparison", "Cross-Validation", "Uncertainty"],
+    mediaLabels: ["Test Matrix", "Measured Records", "Controller Audit", "Replicates", "Tertiary Onset"],
+    media: [
+      {
+        src: "/assets/innolot/measured-creep-records.png",
+        alt: "Measured engineering shear strain versus time for Innolot specimens grouped at 30, 45, and 60 degrees Celsius.",
+        caption: "Reduced measured records: the 60 °C, 90 N specimens are separated after rapid acceleration toward the sensor limit",
+        fit: "contain",
+        tone: "document"
+      },
+      {
+        src: "/assets/innolot/test-matrix.png",
+        alt: "Heatmap of retained Innolot creep specimens across nominal temperatures from 30 to 60 degrees Celsius and forces from 50 to 90 newtons.",
+        caption: "Retained test matrix: 23 specimens across the tested temperature-load combinations",
+        fit: "contain",
+        tone: "document"
+      },
+      {
+        src: "/assets/innolot/controller-stability.png",
+        alt: "Error-bar plots comparing measured load and temperature against their nominal conditions for repeated Innolot creep tests.",
+        caption: "Controller audit: closely matched load and temperature do not explain the largest replicate spread",
+        fit: "contain",
+        tone: "document"
+      },
+      {
+        src: "/assets/innolot/replicate-comparison.png",
+        alt: "Measured strain-time curves for repeated Innolot creep-test conditions, including 30, 45, and 60 degree Celsius groups.",
+        caption: "Repeatability by condition: specimen scatter stays in the analysis instead of being filtered away",
+        fit: "contain",
+        tone: "document"
+      },
+      {
+        src: "/assets/innolot/tertiary-onset.png",
+        alt: "Measured strain and smoothed strain-rate plots for two 60 degree Celsius, 90 newton tests with marked acceleration-onset times.",
+        caption: "Operational tertiary onset: acceleration is identified separately without claiming rupture life",
+        fit: "contain",
+        tone: "document"
+      }
+    ],
+    galleryLayout: "creep",
+    codeExcerpt: {
+      label: "Load-onset detection and one-second reduction",
+      language: "MATLAB",
+      code: `valid = isfinite(raw.time_s) & isfinite(raw.displacement_um) & ...
+    isfinite(raw.load_N) & isfinite(raw.sampleTemp_C);
+
+targetLoad = raw.maxLoad_N;
+atLoad = raw.load_N(valid) >= cfg.loadReachedFraction * targetLoad;
+held = movsum(atLoad, [0 cfg.loadHoldSamples-1]) >= cfg.loadHoldSamples;
+i0 = find(held, 1, 'first');
+assert(~isempty(i0), 'Target load was not reached in %s', raw.sample);
+
+t = raw.time_s(valid);
+disp_um = raw.displacement_um(valid);
+t = t(i0:end) - t(i0);
+disp_um = disp_um(i0:end) - disp_um(i0);
+
+bin = floor(t / cfg.reductionStep_s) + 1;
+tBin = accumarray(bin, t, [], @mean, NaN);
+dispBin = accumarray(bin, disp_um, [], @mean, NaN);`
+    },
     details: [
-      "The analysis asks a deliberately limited question: how well can short-term creep strain be interpolated inside the measured stress-temperature-time domain? It does not treat a fitted equation as evidence of long-duration constitutive behavior or failure life."
+      "The goal is narrow: estimate short-term creep strain inside the measured stress-temperature-time range. The fitted equation is not presented as a long-duration material law or a failure-life model."
     ],
     detailSections: [
       {
         heading: "Dataset and reduction",
         paragraphs: [
           "The retained dataset contains 23 constant-load tests at nominal temperatures of 30, 45, and 60 °C and forces from 50 to 90 N. Force and displacement were converted to equivalent joint stress and engineering shear strain using the eight-joint specimen geometry.",
-          "Each record was zeroed at detected load onset, screened for nonfinite samples, and reduced to one-second means before fitting. Two 60 °C, 90 N tests that entered rapid tertiary acceleration were retained for separate analysis but excluded from the ordinary global fit."
+          "Load onset was detected only after the measured force remained above 98% of target for five consecutive samples. Time and displacement were zeroed at that point, nonfinite measurements were removed, and the remaining high-frequency record was reduced to one-second means without modifying the raw source files.",
+          "Two 60 °C, 90 N tests that entered rapid tertiary acceleration were retained for separate analysis but excluded from the ordinary global fit. This preserves their experimental value without forcing an ordinary short-term interpolation model to represent a different deformation regime."
         ]
       },
       {
@@ -201,13 +283,22 @@ export const projects: Project[] = [
         heading: "Whole-specimen validation",
         paragraphs: [
           "Validation withheld complete specimens rather than random time points. This prevents measurements sharing the same geometry, mounting, zeroing, and drift from appearing in both training and validation data.",
-          "One hundred whole-specimen bootstrap refits were used to separate uncertainty in the fitted mean from the much wider variability expected for a future specimen. At 35 MPa, 45 °C, and 6 h, the fitted mean strain was 0.0440; the fitted-mean 95% interval was 0.0400 to 0.0516, while the approximate new-specimen interval was 0.0129 to 0.1468."
+          "Each candidate was refit after withholding one entire test, then evaluated against that unseen specimen. The selected form balanced held-out error with parameter stability and model complexity rather than choosing the equation with the smallest training residual.",
+          "One hundred whole-specimen bootstrap refits were then used to distinguish uncertainty in the fitted mean from the much wider variability expected for a future specimen. This page explains the validation method and convergence record but leaves fitted coefficients and proprietary prediction outputs out."
+        ]
+      },
+      {
+        heading: "Repeatability and experimental scatter",
+        paragraphs: [
+          "Repeated conditions were analyzed as groups instead of treating each curve as interchangeable. The largest spread occurred in the 45 °C, 50 N group even though the measured load and specimen temperature were closely matched, so controller instability did not explain the difference.",
+          "That scatter was carried into the uncertainty treatment rather than removed through selective exclusions. At low creep rates, slow reversals in some records also indicated that displacement drift could be comparable to the material response over the six-hour window."
         ]
       },
       {
         heading: "Tertiary acceleration",
         paragraphs: [
-          "The two 60 °C, 90 N records entered tertiary acceleration near 3.1 h and then terminated near the displacement-sensor limit at approximately 3.9 h. They did not reach rupture, so the analysis reports an operational acceleration onset rather than a failure-time result."
+          "Tertiary onset was evaluated from a smoothed strain-rate history using a sustained threshold relative to the preceding minimum rate. The two 60 °C, 90 N records entered rapid acceleration near 3.1 h and then terminated near the displacement-sensor limit at approximately 3.9 h.",
+          "Neither specimen reached rupture. The analysis therefore reports an operational acceleration onset and keeps those records outside the ordinary global fit; it does not convert sensor-limit termination into a failure-time result."
         ]
       },
       {
@@ -223,38 +314,71 @@ export const projects: Project[] = [
     title: "Automated Powder Dispensing - Process Equipment Development",
     slug: "icon-automated-powder-dispensing",
     category: "ICoN Programmable Cloud Lab",
-    yearStatus: "In development",
+    yearStatus: "Prototype / testing",
     homepageTitle: "Automated Powder Dispensing",
     homepageGroup: "research",
-    homepageMeta: "ICoN Programmable Cloud Lab / 2026—",
+    homepageMeta: "ICoN Programmable Cloud Lab / 2026 to Present",
     homepageDescription:
-      "Automated powder-dispensing hardware for controlled and repeatable materials-synthesis workflows.",
+      "A variable-rate rotating-pin dispenser prototyped and characterized for closed-loop precursor dosing by mass.",
     homepageTags: ["Automation", "Process Equipment", "Prototyping"],
     role: "Undergraduate Researcher",
     description:
-      "Developing automated powder-dispensing hardware to improve control and repeatability in materials-synthesis workflows.",
+      "A variable-rate automated powder-dispensing prototype combining precision axial positioning, rotary agitation, and measured-mass feedback for autonomous materials synthesis.",
     tags: ["Laboratory Automation", "Process Equipment", "Mechanism Design", "Prototyping", "Repeatability"],
+    metrics: [
+      "3 dispenser concepts compared across 8 engineering criteria",
+      "Variable-gap rotating-pin architecture selected and prototyped",
+      "Dosing accuracy and repeatability characterized",
+      "Geometry, actuation parameters, and operating sequences iterated from test data"
+    ],
     mediaLabels: ["Powder Dispenser Architecture"],
+    media: [
+      {
+        src: "/assets/icon/variable-gap-dispenser-architecture.png",
+        alt: "Annotated concept drawing of the variable-gap rotating-pin powder dispenser, including bottle, stepper motors, lead screw, carriage tracks, funnels, and detachable powder-contact assembly.",
+        caption: "Selected dispenser architecture: lead-screw gap control, rotary agitation, and a detachable powder-contact assembly",
+        fit: "contain",
+        tone: "cad"
+      },
+      {
+        src: "/assets/icon/precursor-preparation-cell.png",
+        alt: "System diagram showing the powder cartridge library, docked variable-gap dispenser, stationary balance, mixing stage, and furnace interface inside a controlled enclosure.",
+        caption: "Precursor-preparation cell concept: powder identity, dosing, weighing, mixing, and batch history stay connected",
+        fit: "contain",
+        tone: "document"
+      }
+    ],
+    galleryLayout: "icon",
     details: [
-      "The ICoN Programmable Cloud Lab project applies hands-on powder-processing experience to laboratory automation and purpose-built process equipment."
+      "The project translates hands-on MAX and MXene precursor preparation into a controlled machine sequence: identify the powder, dose toward a recipe-defined mass, verify delivery, and retain the batch history."
     ],
     detailSections: [
       {
         heading: "Process objective",
         paragraphs: [
-          "Manual precursor preparation exposes sources of variability in powder handling and dosing. The equipment concept is intended to make those steps more controlled and repeatable within future automated synthesis workflows."
+          "The larger system is intended to store multiple precursor powders, select the correct material and lot, dispense to a recipe-defined target, verify the delivered mass, and carry the batch into mixing and furnace preparation. Material identity, deviations, and process history stay attached to the same workflow.",
+          "MAX and MXene precursor handling adds constraints beyond generic powder dosing, including abrasive or reactive powders, composition sensitivity, wear contamination, atmosphere control, grounding, dust capture, and powder-specific contact surfaces."
         ]
       },
       {
-        heading: "Equipment architecture",
+        heading: "Trade study and concept selection",
         paragraphs: [
-          "Current concepts combine precision axial positioning with rotary or agitation mechanisms, cartridge and nozzle geometry, and controlled dosing. Each mechanism is being considered as part of a complete powder-handling system rather than as an isolated printed component."
+          "Miniature-auger, vibratory-capillary, and pin-head concepts were compared across powder compatibility, fine-dose capability, multi-gram throughput, start-stop control, retained powder, wear risk, autonomous precedent, and development risk.",
+          "The selected direction adapts the pin-head concept into a variable-gap rotating-pin dispenser. Axial motion changes the annular flow gap while rotary agitation regulates powder movement, allowing the same mechanism to transition between faster bulk delivery and controlled fine dosing near the target mass."
         ]
       },
       {
-        heading: "Hardware iteration and status",
+        heading: "Prototype and operating sequence",
         paragraphs: [
-          "Development is focused on architecture, prototyping, and understanding how mechanical choices affect powder flow and repeatability. Characterization and broader automation integration remain ongoing; this page does not claim a completed dispensing or synthesis platform."
+          "I designed and prototyped the variable-rate dispensing system around precision axial positioning and rotary agitation. The operating sequence verifies the powder and target, tares the balance, opens the gap for bulk flow, narrows the gap and slows rotation near the target, then closes the mechanism and allows residual powder to settle before accepting, correcting, or rejecting the measured dose.",
+          "A stationary analytical balance provides gain-in-weight feedback while powder-contact components remain detachable. This separates the measurement-sensitive vial from cartridge transport and supports powder-specific cleaning or replacement."
+        ]
+      },
+      {
+        heading: "Characterization and iteration",
+        paragraphs: [
+          "I characterized dosing accuracy and repeatability, then used the results to iterate mechanical geometry, actuation parameters, and automated operating sequences. The test program also considers minimum reliable dose, usable flow-rate range, closure overshoot, settling time, jam or bridging behavior, retained powder, wear, and carryover risk.",
+          "So far, the result is a tested single-dispenser prototype and a repeatable way to improve it from dosing data. Multi-cartridge storage, controlled-atmosphere integration, vial transport, mixing, and furnace interfacing are still later system stages."
         ]
       }
     ],
@@ -267,9 +391,9 @@ export const projects: Project[] = [
     yearStatus: "Active development",
     homepageTitle: "MAXCalc",
     homepageGroup: "research",
-    homepageMeta: "LSML / 2026—",
+    homepageMeta: "LSML / 2026 to Present",
     homepageDescription:
-      "Synthesis-planning and VNA/EMI analysis tools built around laboratory workflows.",
+      "Recipe planning, precursor balancing, EMI-data validation, and print-ready batch records in one lab-facing tool.",
     homepageTags: ["Materials", "Scientific Computing", "Analysis"],
     logoSrc: "/assets/maxcalc/maxcalc-logo.svg",
     role: "Developer",
@@ -281,7 +405,7 @@ export const projects: Project[] = [
       {
         src: "/assets/maxcalc/calculation-workspace.png",
         alt: "MAXCalc recipe workspace showing a mixed-metal 413 MAX formula, normalized site occupancy, and final precursor weighing results.",
-        caption: "Auditable recipe workspace — target definition, normalized composition, and final weighing result",
+        caption: "Auditable recipe workspace: target definition, normalized composition, and final weighing result",
         fit: "contain",
         tone: "cad"
       },
@@ -302,7 +426,7 @@ export const projects: Project[] = [
       {
         src: "/assets/maxcalc/recipe-comparison.png",
         alt: "MAXCalc comparison view showing deterministic differences across related TiVNb MAX-phase recipes.",
-        caption: "Recipe comparison — arithmetic differences are separated from claims of scientific quality",
+        caption: "Recipe comparison: arithmetic differences are kept separate from claims about scientific quality",
         fit: "contain",
         tone: "cad"
       },
@@ -369,7 +493,7 @@ export const projects: Project[] = [
     homepageTitle: "Aluminum V-Jaw Fixture",
     homepageGroup: "research",
     homepageDescription:
-      "Machined fixture developed through printed prototypes for repeatable MAX-sample processing.",
+      "A machined MAX-sample fixture developed through mill-tested prototypes, cutting an estimated 60-minute step to 20.",
     homepageTags: ["CAD", "CNC", "DFM"],
     homepageHideMedia: true,
     description:
@@ -485,7 +609,7 @@ export const projects: Project[] = [
     homepageTitle: "Purdue Electric Racing",
     homepageGroup: "engineering",
     homepageDescription:
-      "Composite aero manufacturing, resin-infusion tooling, and supporting mechanical design.",
+      "Aero design carried into composite fabrication, mounting hardware, and a more stable vacuum-infusion port.",
     homepageTags: ["Composites", "Tooling", "FSAE"],
     description:
       "Aerodynamic component and composite-manufacturing work for a Formula SAE team, including resin-infusion workflow support and FDM tooling for vacuum processes.",
@@ -496,7 +620,8 @@ export const projects: Project[] = [
       alt: "Purdue Electric Racing Formula SAE car with aero package in the paddock.",
       caption: "PER 26 full-car context",
       fit: "cover",
-      tone: "photo"
+      tone: "photo",
+      unoptimized: true
     },
     media: [
       {
@@ -504,7 +629,8 @@ export const projects: Project[] = [
         alt: "Purdue Electric Racing Formula SAE car with aero package in the paddock.",
         caption: "2026 Purdue Electric Racing vehicle context for aero and composite work.",
         fit: "cover",
-        tone: "photo"
+        tone: "photo",
+        unoptimized: true
       },
       {
         src: "/assets/per/per-26-prelim-aero-design.png",
@@ -550,8 +676,8 @@ export const projects: Project[] = [
       {
         heading: "Engineering takeaway",
         paragraphs: [
-          "The PER work is valuable because it combined design participation with production responsibility. It required attention to geometry, mounting, documentation, and real composite workflow behavior without implying sole ownership of the full aero package.",
-          "The strongest takeaway is practical: a successful aero component is not only an aerodynamic surface, but a manufacturable system involving molds, fixtures, fasteners, operators, process timing, and inspection."
+          "PER put design and production in the same loop. My contribution covered geometry, mounting, documentation, and composite workflow details without claiming ownership of the full aero package.",
+          "The practical lesson was that an aero component is more than its surface geometry. It also depends on molds, fixtures, fasteners, process timing, assembly access, and inspection."
         ]
       }
     ],
@@ -642,7 +768,7 @@ export const projects: Project[] = [
     homepageTitle: "FRC / Team 868",
     homepageGroup: "engineering",
     homepageDescription:
-      "Mechanical design and fabrication across several years of competitive robotics.",
+      "Intake and shooter mechanism work, fabrication support, and mechanical leadership for FRC Team 868.",
     homepageTags: ["Robotics", "Manufacturing", "Leadership"],
     description:
       "Mechanical subsystem design, fabrication, and cross-functional leadership for Team 868, including CAD and machining mentorship.",
@@ -653,7 +779,8 @@ export const projects: Project[] = [
       alt: "TechHOUNDS Team 868 robot competing on a 2024 FRC field.",
       caption: "2024 competition robot",
       fit: "cover",
-      tone: "photo"
+      tone: "photo",
+      unoptimized: true
     },
     media: [
       {
@@ -661,7 +788,8 @@ export const projects: Project[] = [
         alt: "TechHOUNDS Team 868 robot competing on a 2024 FRC field.",
         caption: "Competition context",
         fit: "cover",
-        tone: "photo"
+        tone: "photo",
+        unoptimized: true
       },
       {
         src: "/assets/frc/techhounds-bot-closeup.png",

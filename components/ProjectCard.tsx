@@ -23,7 +23,12 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
       >
         <article className="flex h-full flex-col py-6">
           {showMedia && project.cardMedia ? (
-            <ProjectMedia media={project.cardMedia} aspect="wide" className="project-card-media" />
+            <ProjectMedia
+              media={project.cardMedia}
+              aspect="wide"
+              className="project-card-media"
+              priority
+            />
           ) : null}
           <div className={`flex flex-1 flex-col ${showMedia ? "pt-5" : "pt-1"}`}>
             {project.homepageMeta ? (

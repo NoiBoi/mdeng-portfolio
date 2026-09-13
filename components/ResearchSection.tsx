@@ -77,7 +77,7 @@ export function ResearchSection() {
         <ResearchProgram
           index="01"
           lab="CoSMAP Lab"
-          role="Undergraduate Researcher / 2026—"
+          role="Undergraduate Researcher / 2026 to Present"
           title="Advanced packaging reliability"
           links={
             <>
@@ -95,19 +95,19 @@ export function ResearchSection() {
           }
         >
           <p>
-            Research on temperature-dependent deformation and reliability in electronic packaging, divided between
-            physical characterization workflows and a separate short-term solder-joint modeling effort.
+            Fixture-led characterization of package warpage, bend, shear, vibration, and shock response, paired with
+            MATLAB and ANSYS workflows for measured-versus-modeled behavior.
           </p>
           <p>
-            The two records keep planned testing distinct from completed analysis while preserving their shared
-            packaging-reliability context.
+            Four-point-bend fixture iteration reduced unusable results from 0.4 to 0.1 errors per test; a separate
+            23-test Innolot study documents whole-specimen model validation and uncertainty.
           </p>
         </ResearchProgram>
 
         <ResearchProgram
           index="02"
           lab="Layered Materials & Structures (LSML) Lab"
-          role="Undergraduate Student Researcher / Summer 2026—"
+          role="Undergraduate Student Researcher / Summer 2026 to Present"
           title="MAX/MXene synthesis & research tooling"
           delay={80}
           links={
@@ -138,7 +138,7 @@ export function ResearchSection() {
         <ResearchProgram
           index="03"
           lab="ICoN Programmable Cloud Lab"
-          role="Undergraduate Researcher / 2026—"
+          role="Undergraduate Researcher / 2026 to Present"
           title="Autonomous materials preparation"
           links={
             <ResearchLink
@@ -149,12 +149,12 @@ export function ResearchSection() {
           }
         >
           <p>
-            Developing a recipe-driven powder-preparation architecture for controlled precursor storage,
-            selection, dispensing, mass verification, mixing, and process-history tracking.
+            Designed and prototyped a variable-rate rotating-pin dispenser that combines precision axial positioning,
+            rotary agitation, and measured-mass feedback for precursor dosing.
           </p>
           <p>
-            The current path centers on a closed-loop variable-gap rotating-pin dispenser; hardware validation
-            and multi-cartridge integration remain in development.
+            Dosing accuracy and repeatability now feed iteration of the geometry, actuation parameters, and automated
+            operating sequence; multi-cartridge cell integration remains the next system stage.
           </p>
         </ResearchProgram>
 

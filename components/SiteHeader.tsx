@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { type MouseEvent, useEffect, useState } from "react";
 import { siteConfig } from "@/data/site";
 
@@ -13,6 +14,7 @@ const navItems = [
 ];
 
 export function SiteHeader() {
+  const pathname = usePathname();
   const [showBrand, setShowBrand] = useState(false);
 
   const handleBrandClick = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -23,35 +25,86 @@ export function SiteHeader() {
   };
 
   useEffect(() => {
+    let frame = 0;
+
+    const clamp = (value: number, min: number, max: number) =>
+      Math.min(max, Math.max(min, value));
+
+    const smoothstep = (start: number, end: number, value: number) => {
+      const amount = clamp((value - start) / (end - start), 0, 1);
+      return amount * amount * (3 - 2 * amount);
+    };
+
     const update = () => {
-      const onHome = window.location.pathname === "/";
-      const revealThreshold = window.matchMedia("(min-width: 901px)").matches ? 0.56 : 0.22;
-      setShowBrand(!onHome || window.scrollY > window.innerHeight * revealThreshold);
+      const onHome = pathname === "/";
+      const width = window.innerWidth;
+      const baseInset = width < 768 ? 20 : 24;
+      const centeredInset = Math.max(baseInset, (width - 1680) / 2 + 24);
+      let headerExpansion = 0;
+      let heroProgress = onHome ? 0 : 1;
+
+      if (onHome && width > 900) {
+        const hero = document.querySelector<HTMLElement>(".hero-section");
+        if (hero) {
+          const rect = hero.getBoundingClientRect();
+          const scrollable = Math.max(1, hero.offsetHeight - window.innerHeight);
+          const rawHeroProgress = -rect.top / scrollable;
+          const recenterEnd =
+            (hero.offsetHeight - window.innerHeight * 0.5) / scrollable;
+          heroProgress = clamp(rawHeroProgress, 0, 1);
+          const expand = smoothstep(0.16, 0.56, heroProgress);
+          const recenter = smoothstep(0.92, recenterEnd, rawHeroProgress);
+          const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+          headerExpansion = reducedMotion
+            ? rawHeroProgress >= 0.56 && rawHeroProgress < 0.92
+              ? 1
+              : 0
+            : expand * (1 - recenter);
+        }
+      }
+
+      if (onHome && width <= 900) {
+        heroProgress = clamp(window.scrollY / Math.max(1, window.innerHeight * 2.25), 0, 1);
+      }
+
+      setShowBrand(!onHome || heroProgress >= (width > 900 ? 0.56 : 0.22));
+
+      const outerInset = clamp(width * 0.02, 20, 36);
+      const currentInset = centeredInset + (outerInset - centeredInset) * headerExpansion;
+      document.documentElement.style.setProperty("--hero-frame-inset", `${currentInset}px`);
+    };
+
+    const requestUpdate = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(update);
     };
 
     update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    window.addEventListener("hashchange", update);
-    window.addEventListener("popstate", update);
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    window.addEventListener("hashchange", requestUpdate);
+    window.addEventListener("popstate", requestUpdate);
     return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-      window.removeEventListener("hashchange", update);
-      window.removeEventListener("popstate", update);
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      window.removeEventListener("hashchange", requestUpdate);
+      window.removeEventListener("popstate", requestUpdate);
+      document.documentElement.style.removeProperty("--hero-frame-inset");
     };
-  }, []);
+  }, [pathname]);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-graphite-950/82 backdrop-blur-md">
       <nav
-        className="mx-auto flex h-16 max-w-[1680px] items-center justify-between px-5 md:px-6"
+        className="site-header-nav mx-auto flex h-16 items-center justify-between"
         aria-label="Primary navigation"
       >
         <Link
           href="/"
           onClick={handleBrandClick}
-          aria-label="Matthew Deng — home"
+          aria-label="Matthew Deng home"
           className={`site-brand font-mono text-xs font-bold uppercase text-paper transition hover:text-cyan focus-visible:focus-ring ${
             showBrand ? "site-brand-visible" : ""
           }`}

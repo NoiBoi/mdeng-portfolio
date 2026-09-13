@@ -18,6 +18,7 @@ export function generateStaticParams() {
 
 function getGalleryClass(layout = "standard") {
   if (layout === "frc") return "project-gallery project-gallery-frc";
+  if (layout === "creep") return "project-gallery project-gallery-creep";
   return "project-gallery";
 }
 
@@ -74,6 +75,21 @@ function getMediaPlacement(layout = "standard", index: number) {
     return placements[index] ?? { aspect: "wide", className: "md:col-span-3" };
   }
 
+  if (layout === "icon") {
+    return { aspect: "wide", className: "md:col-span-3" } as const;
+  }
+
+  if (layout === "creep") {
+    const placements = [
+      { aspect: "document", className: "md:col-span-6" },
+      { aspect: "landscape", className: "md:col-span-3" },
+      { aspect: "landscape", className: "md:col-span-3" },
+      { aspect: "landscape", className: "md:col-span-3" },
+      { aspect: "landscape", className: "md:col-span-3" }
+    ] as const;
+    return placements[index] ?? { aspect: "wide", className: "md:col-span-3" };
+  }
+
   return { aspect: index === 0 ? "wide" : "square", className: "md:col-span-3" } as const;
 }
 
@@ -86,9 +102,28 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
     };
   }
 
+  const title = `${project.title} | Matthew Deng`;
+  const canonicalPath = `/projects/${project.slug}`;
+
   return {
-    title: `${project.title} | Matthew Deng`,
-    description: project.description
+    title,
+    description: project.description,
+    alternates: {
+      canonical: canonicalPath
+    },
+    openGraph: {
+      title,
+      description: project.description,
+      url: canonicalPath,
+      siteName: "Matthew Deng Engineering Portfolio",
+      locale: "en_US",
+      type: "article"
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description: project.description
+    }
   };
 }
 
@@ -161,6 +196,21 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               );
             })}
           </div>
+        ) : null}
+
+        {project.codeExcerpt ? (
+          <Reveal className="project-code-section mt-14">
+            <div className="project-code-heading">
+              <p className="section-label">MATLAB excerpt</p>
+            </div>
+            <div className="project-code-panel">
+              <div className="project-code-bar">
+                <span>{project.codeExcerpt.label}</span>
+                <span>{project.codeExcerpt.language}</span>
+              </div>
+              <pre><code>{project.codeExcerpt.code}</code></pre>
+            </div>
+          </Reveal>
         ) : null}
 
         <div className="project-detail-layout mt-16 grid gap-10 border-t border-white/10 pt-12 lg:grid-cols-[0.65fr_1.35fr]">

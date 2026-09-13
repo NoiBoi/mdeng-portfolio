@@ -111,14 +111,12 @@ function useViewportSize() {
 
 export function LynxHero() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const archiveLabelRef = useRef<HTMLParagraphElement | null>(null);
   const pointerTargetRef = useRef({ x: 0, y: 0 });
   const pointerCurrentRef = useRef({ x: 0, y: 0 });
   const pointerRafRef = useRef(0);
   const [progress, setProgress] = useState(0);
   const [pointer, setPointer] = useState({ x: 0, y: 0 });
   const [activeHotspot, setActiveHotspot] = useState<AnnotationId | null>(null);
-  const [archiveLabelWidth, setArchiveLabelWidth] = useState(300);
   const reducedMotion = useReducedMotion();
   const viewport = useViewportSize();
   const isMobileStage = viewport.width <= 900;
@@ -126,11 +124,6 @@ export function LynxHero() {
     isMobileStage && viewport.width > viewport.height && viewport.height <= 520;
   const isShortPortrait =
     isMobileStage && viewport.height > viewport.width && viewport.height <= 740;
-
-  useEffect(() => {
-    const width = archiveLabelRef.current?.getBoundingClientRect().width;
-    if (width) setArchiveLabelWidth(width);
-  }, [viewport.width]);
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -191,11 +184,6 @@ export function LynxHero() {
   const overlayIn = smoothstep(isMobileStage ? 0.76 : 0.52, isMobileStage ? 0.8 : 0.64, displayProgress);
   const overlayOut = smoothstep(isMobileStage ? 0.965 : 0.84, isMobileStage ? 0.985 : 0.94, displayProgress);
   const overlayOpacity = reducedMotion ? 1 : overlayIn * (1 - overlayOut);
-  const archiveMove = smoothstep(0.3, 0.62, displayProgress);
-  const desktopGutter = Math.max(24, (viewport.width - 1680) / 2 + 24);
-  const overlayInset = clamp(viewport.width * 0.02, 20, 36);
-  const archiveStart = viewport.width - desktopGutter - archiveLabelWidth;
-  const archiveEnd = viewport.width - overlayInset - archiveLabelWidth;
   const hotspotsAvailable =
     !isMobileStage && !reducedMotion && displayProgress > 0.52 && displayProgress < 0.92;
   const mobileStageX = isCompactLandscape
@@ -208,6 +196,16 @@ export function LynxHero() {
   const mobileFinalScale = isCompactLandscape ? 0.95 : 2.35;
   const mobileEndStageX = viewport.width * (isCompactLandscape ? -0.018 : -0.045);
   const mobileEndStageY = viewport.height * (isCompactLandscape ? 0.07 : 0.04);
+  const currentStageY = lerp(
+    isMobileStage ? mobileStageY : 0,
+    isMobileStage ? mobileEndStageY : 0,
+    fullscreen
+  );
+  const currentMediaScale = lerp(
+    isMobileStage ? mobileInitialScale : 0.78,
+    isMobileStage ? mobileFinalScale : 0.96,
+    fullscreen
+  );
 
   const onPointerMove = useCallback(
     (event: React.PointerEvent<HTMLElement>) => {
@@ -247,8 +245,6 @@ export function LynxHero() {
     "--overlay-opacity": overlayOpacity,
     "--overlay-y": `${(1 - overlayOpacity) * 14}px`,
     "--archive-opacity": isMobileStage ? 1 - archiveOut : 1 - overlayOut,
-    "--archive-left": `${lerp(archiveStart, archiveEnd, archiveMove)}px`,
-    "--archive-y": `${lerp(0, -26, archiveMove)}px`,
     "--inspect-opacity": activeHotspot ? 0 : overlayOpacity,
     "--art-x": `${pointer.x * 6}px`,
     "--art-y": `${pointer.y * 4}px`,
@@ -257,20 +253,12 @@ export function LynxHero() {
       isMobileStage ? mobileEndStageX : 0,
       fullscreen
     )}px`,
-    "--hero-stage-y": `${lerp(
-      isMobileStage ? mobileStageY : 0,
-      isMobileStage ? mobileEndStageY : 0,
-      fullscreen
-    )}px`,
+    "--hero-stage-y": `${currentStageY}px`,
     "--authentic-shadow-opacity": (isMobileStage ? 1 : 0.72) * mediaBlend,
     "--authentic-shadow-y": `${lerp(59, 72, fullscreen)}%`,
     "--transparent-opacity": 1,
     "--background-opacity": mediaBlend,
-    "--hero-media-scale": lerp(
-      isMobileStage ? mobileInitialScale : 0.78,
-      isMobileStage ? mobileFinalScale : 0.96,
-      fullscreen
-    )
+    "--hero-media-scale": currentMediaScale
   } as CSSProperties;
 
   return (
@@ -330,7 +318,7 @@ export function LynxHero() {
           </div>
         </div>
 
-        <p ref={archiveLabelRef} className="hero-archive-label">
+        <p className="hero-archive-label">
           FEATURED ARTIFACT / LYNX MK.1 LEG MODULE
         </p>
 
@@ -369,7 +357,7 @@ export function LynxHero() {
             </div>
             <div className="hero-caption-meta">
               <span>Founder &amp; Lead Engineer</span>
-              <span>2023—Present</span>
+              <span>2023 to Present</span>
             </div>
             <Link href="/projects/lynx" className="hero-caption-link">
               Open case study <span aria-hidden="true">→</span>

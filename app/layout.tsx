@@ -7,11 +7,22 @@ import { Analytics } from "@vercel/analytics/next";
 export const metadata: Metadata = {
   title: "Matthew Deng | Mechanical Engineering Portfolio",
   description: siteConfig.description,
-  metadataBase: new URL("https://example.com"),
+  metadataBase: new URL(siteConfig.siteUrl),
+  alternates: {
+    canonical: "/"
+  },
   openGraph: {
     title: "Matthew Deng | Mechanical Engineering Portfolio",
     description: siteConfig.description,
+    url: "/",
+    siteName: "Matthew Deng Engineering Portfolio",
+    locale: "en_US",
     type: "website"
+  },
+  twitter: {
+    card: "summary",
+    title: "Matthew Deng | Mechanical Engineering Portfolio",
+    description: siteConfig.description
   }
 };
 
@@ -25,7 +36,7 @@ export default function RootLayout({
       <body>
         <SiteHeader />
         {children}
-	<Analytics />
+        <Analytics />
       </body>
     </html>
   );

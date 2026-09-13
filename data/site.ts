@@ -1,5 +1,6 @@
 export const siteConfig = {
   name: "Matthew Deng",
+  siteUrl: "https://matthew-deng-portfolio.vercel.app",
   role: "Mechanical Engineering",
   university: "Purdue University",
   email: "deng301@purdue.edu",

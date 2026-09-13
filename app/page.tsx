@@ -44,8 +44,9 @@ export default function Home() {
         <div className="about-grid">
           <Reveal className="about-statement">
             <p>
-              Mechanical Engineering at Purdue, working across packaging, advanced materials,
-              and experimental systems.
+              I like figuring out how things work, especially when that means bouncing between
+              CAD, the lab, and MATLAB. Most of my projects start with building something,
+              testing it, and then chasing down why it behaved the way it did.
             </p>
             <div className="about-meta">
               <div className="about-meta-item">
@@ -56,7 +57,7 @@ export default function Home() {
               </div>
               <div className="about-meta-item">
                 <p className="about-meta-label">Method</p>
-                <p className="about-meta-text">Design — fabricate — characterize — model — iterate</p>
+                <p className="about-meta-text">Design / fabricate / characterize / model / iterate</p>
               </div>
             </div>
           </Reveal>
