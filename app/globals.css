@@ -483,7 +483,6 @@ body {
   margin-right: 0.22em;
   opacity: 0;
   transform: translate3d(0, 0.58em, 0);
-  filter: blur(5px);
   animation: word-rise 760ms var(--ease-editorial) forwards;
   animation-delay: var(--word-delay, 0ms);
 }
@@ -497,7 +496,6 @@ body {
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);
-    filter: blur(0);
   }
 }
 
@@ -843,6 +841,8 @@ body {
   border: 0;
   background: transparent;
   box-shadow: none;
+  contain: layout paint;
+  isolation: isolate;
   transform-origin: center;
 }
 
@@ -1427,7 +1427,7 @@ body {
 
 .about-identity-mark {
   display: block;
-  width: 7rem !important;
+  width: auto !important;
   height: 2.15rem !important;
   max-width: 7rem;
   max-height: 2.15rem;
@@ -1626,7 +1626,7 @@ body {
   }
 
   .about-identity-mark {
-    width: 5.5rem !important;
+    width: auto !important;
     height: 1.7rem !important;
   }
 

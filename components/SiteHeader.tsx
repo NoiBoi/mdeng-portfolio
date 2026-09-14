@@ -30,6 +30,8 @@ export function SiteHeader() {
     let heroTop = 0;
     let heroScrollable = 1;
     let recenterEnd = 1;
+    let reduceMotion = false;
+    let lastInset = Number.NaN;
 
     const clamp = (value: number, min: number, max: number) =>
       Math.min(max, Math.max(min, value));
@@ -46,6 +48,7 @@ export function SiteHeader() {
       heroTop = window.scrollY + hero.getBoundingClientRect().top;
       heroScrollable = Math.max(1, hero.offsetHeight - window.innerHeight);
       recenterEnd = (hero.offsetHeight - window.innerHeight * 0.5) / heroScrollable;
+      reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     };
 
     const update = () => {
@@ -61,9 +64,7 @@ export function SiteHeader() {
         heroProgress = clamp(rawHeroProgress, 0, 1);
         const expand = smoothstep(0.16, 0.56, heroProgress);
         const recenter = smoothstep(0.92, recenterEnd, rawHeroProgress);
-        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-        headerExpansion = reducedMotion
+        headerExpansion = reduceMotion
           ? rawHeroProgress >= 0.56 && rawHeroProgress < 0.92
             ? 1
             : 0
@@ -82,7 +83,10 @@ export function SiteHeader() {
 
       const outerInset = clamp(width * 0.02, 20, 36);
       const currentInset = centeredInset + (outerInset - centeredInset) * headerExpansion;
-      document.documentElement.style.setProperty("--hero-frame-inset", `${currentInset}px`);
+      if (Math.abs(currentInset - lastInset) > 0.05 || Number.isNaN(lastInset)) {
+        lastInset = currentInset;
+        document.documentElement.style.setProperty("--hero-frame-inset", `${currentInset}px`);
+      }
     };
 
     const requestUpdate = () => {
@@ -91,8 +95,11 @@ export function SiteHeader() {
     };
 
     const onResize = () => {
-      updateMetrics();
-      requestUpdate();
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        updateMetrics();
+        update();
+      });
     };
 
     updateMetrics();
@@ -112,7 +119,7 @@ export function SiteHeader() {
   }, [pathname]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-graphite-950/82 backdrop-blur-md">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-graphite-950/95">
       <nav
         className="site-header-nav mx-auto flex h-16 items-center justify-between"
         aria-label="Primary navigation"
@@ -130,7 +137,7 @@ export function SiteHeader() {
               <Image
                 src={siteConfig.purdueLogoSrc}
                 alt=""
-                width={22}
+                width={26}
                 height={14}
                 aria-hidden="true"
                 style={{ width: "auto", height: "auto" }}

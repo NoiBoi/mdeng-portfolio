@@ -616,7 +616,7 @@ dispBin = accumarray(bin, disp_um, [], @mean, NaN);`
     tags: ["Composites", "FDM", "Aerodynamics", "Manufacturing"],
     mediaLabels: ["Composite Tooling / Race-Car Component"],
     cardMedia: {
-      src: "/assets/per/per-26-full-car.png",
+      src: "/assets/per/per-26-full-car.webp",
       alt: "Purdue Electric Racing Formula SAE car with aero package in the paddock.",
       caption: "PER 26 full-car context",
       fit: "cover",
@@ -625,7 +625,7 @@ dispBin = accumarray(bin, disp_um, [], @mean, NaN);`
     },
     media: [
       {
-        src: "/assets/per/per-26-full-car.png",
+        src: "/assets/per/per-26-full-car.webp",
         alt: "Purdue Electric Racing Formula SAE car with aero package in the paddock.",
         caption: "2026 Purdue Electric Racing vehicle context for aero and composite work.",
         fit: "cover",
@@ -775,7 +775,7 @@ dispBin = accumarray(bin, disp_um, [], @mean, NaN);`
     tags: ["Robotics", "CAD", "Manufacturing", "Leadership"],
     mediaLabels: ["Competition Robot / Mechanism"],
     cardMedia: {
-      src: "/assets/frc/techhounds-bot-in-competition-2024.png",
+      src: "/assets/frc/techhounds-bot-in-competition-2024.webp",
       alt: "TechHOUNDS Team 868 robot competing on a 2024 FRC field.",
       caption: "2024 competition robot",
       fit: "cover",
@@ -784,7 +784,7 @@ dispBin = accumarray(bin, disp_um, [], @mean, NaN);`
     },
     media: [
       {
-        src: "/assets/frc/techhounds-bot-in-competition-2024.png",
+        src: "/assets/frc/techhounds-bot-in-competition-2024.webp",
         alt: "TechHOUNDS Team 868 robot competing on a 2024 FRC field.",
         caption: "Competition context",
         fit: "cover",

@@ -69,7 +69,6 @@ export default function Home() {
                 alt="Matthew Deng headshot"
                 fill
                 sizes="(max-width: 700px) 116px, 176px"
-                unoptimized
                 className="object-contain"
               />
             </div>
@@ -78,9 +77,8 @@ export default function Home() {
                 src={siteConfig.purdueLogoSrc}
                 alt="Purdue mark"
                 width={112}
-                height={34}
+                height={60}
                 className="about-identity-mark"
-                style={{ width: "auto", height: "auto" }}
               />
               <div>
                 <p className="about-identity-name">Matthew Deng</p>

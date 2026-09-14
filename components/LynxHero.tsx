@@ -165,11 +165,15 @@ function useViewportSize() {
 
   useEffect(() => {
     const update = () => setSize({ width: window.innerWidth, height: window.innerHeight });
-    const frame = requestAnimationFrame(update);
-    window.addEventListener("resize", update);
+    let frame = requestAnimationFrame(update);
+    const requestUpdate = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(update);
+    };
+    window.addEventListener("resize", requestUpdate);
     return () => {
       cancelAnimationFrame(frame);
-      window.removeEventListener("resize", update);
+      window.removeEventListener("resize", requestUpdate);
     };
   }, []);
 
@@ -254,6 +258,11 @@ export function LynxHero() {
     let sectionTop = 0;
     let scrollable = 1;
     let raf = 0;
+    let lastProgress = Number.NaN;
+    let lastCopyHidden: boolean | null = null;
+    let lastCaptionHidden: boolean | null = null;
+    let lastCueHidden: boolean | null = null;
+    let lastAuthenticShadow: boolean | null = null;
 
     const updateMetrics = () => {
       sectionTop = window.scrollY + node.getBoundingClientRect().top;
@@ -266,6 +275,8 @@ export function LynxHero() {
       const isMobile = width <= 900;
       const compactLandscape = isMobile && width > height && height <= 520;
       const nextProgress = clamp((window.scrollY - sectionTop) / scrollable, 0, 1);
+      if (nextProgress === lastProgress) return;
+      lastProgress = nextProgress;
       const motion = getHeroMotion(nextProgress, isMobile);
       const initialScale = isMobile ? (compactLandscape ? 0.72 : 1) : 0.78;
       const finalScale = isMobile ? (compactLandscape ? 0.95 : 2.35) : 0.96;
@@ -301,18 +312,34 @@ export function LynxHero() {
       style.setProperty("--background-opacity", `${motion.mediaBlend}`);
       style.setProperty("--hero-media-scale", `${mediaScale}`);
 
-      copy?.setAttribute("aria-hidden", `${motion.introOut > 0.96}`);
-      caption?.setAttribute("aria-hidden", `${motion.overlayOpacity < 0.08}`);
-      hotspotLayer?.setAttribute("aria-hidden", `${!nextHotspotsAvailable}`);
-      hotspotButtons.forEach((button) => {
-        button.disabled = !nextHotspotsAvailable;
-      });
+      const copyHidden = motion.introOut > 0.96;
+      const captionHidden = motion.overlayOpacity < 0.08;
+      const cueHidden = nextProgress > 0.18;
+      const authenticShadow = motion.mediaBlend > 0.9;
+      if (copyHidden !== lastCopyHidden) {
+        lastCopyHidden = copyHidden;
+        copy?.setAttribute("aria-hidden", `${copyHidden}`);
+      }
+      if (captionHidden !== lastCaptionHidden) {
+        lastCaptionHidden = captionHidden;
+        caption?.setAttribute("aria-hidden", `${captionHidden}`);
+      }
+      if (cueHidden !== lastCueHidden) {
+        lastCueHidden = cueHidden;
+        if (cue) cue.style.opacity = cueHidden ? "0" : "1";
+      }
+      if (authenticShadow !== lastAuthenticShadow) {
+        lastAuthenticShadow = authenticShadow;
+        node.classList.toggle("hero-authentic-shadow", authenticShadow);
+      }
       if (hotspotsAvailableRef.current !== nextHotspotsAvailable) {
         hotspotsAvailableRef.current = nextHotspotsAvailable;
+        hotspotLayer?.setAttribute("aria-hidden", `${!nextHotspotsAvailable}`);
+        hotspotButtons.forEach((button) => {
+          button.disabled = !nextHotspotsAvailable;
+        });
         setHotspotsAvailable(nextHotspotsAvailable);
       }
-      node.classList.toggle("hero-authentic-shadow", motion.mediaBlend > 0.9);
-      if (cue) cue.style.opacity = nextProgress > 0.18 ? "0" : "1";
 
       markers.forEach((marker, index) => {
         marker.style.setProperty("--node-opacity", `${motion.nodeOpacities[index] ?? 0}`);
@@ -343,8 +370,12 @@ export function LynxHero() {
     };
 
     const onResize = () => {
-      updateMetrics();
-      onScroll();
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        lastProgress = Number.NaN;
+        updateMetrics();
+        update();
+      });
     };
 
     updateMetrics();
@@ -442,16 +473,12 @@ export function LynxHero() {
 
   const onPointerMove = useCallback(
     (event: React.PointerEvent<HTMLElement>) => {
-      if (reducedMotion || !window.matchMedia("(pointer: fine)").matches) return;
-      const rect = event.currentTarget.getBoundingClientRect();
+      if (reducedMotion || event.pointerType !== "mouse") return;
       pointerTargetRef.current = {
-        x: ((event.clientX - rect.left) / rect.width - 0.5) * 2,
-        y: ((event.clientY - rect.top) / rect.height - 0.5) * 2
+        x: (event.clientX / window.innerWidth - 0.5) * 2,
+        y: (event.clientY / window.innerHeight - 0.5) * 2
       };
       startPointerAnimation();
-      if (event.target instanceof Element && !event.target.closest(".hero-hotspot")) {
-        setActiveHotspot(null);
-      }
     },
     [reducedMotion, startPointerAnimation]
   );
@@ -643,8 +670,6 @@ export function LynxHero() {
                 className={`hero-hotspot ${hotspot.zoneClass}`}
                 onFocus={() => setActiveHotspot(hotspot.id)}
                 onBlur={() => setActiveHotspot(null)}
-                onMouseEnter={() => setActiveHotspot(hotspot.id)}
-                onMouseLeave={() => setActiveHotspot(null)}
                 onPointerEnter={() => setActiveHotspot(hotspot.id)}
                 onPointerLeave={() => setActiveHotspot(null)}
               />

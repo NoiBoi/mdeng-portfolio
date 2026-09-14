@@ -2,6 +2,27 @@
 
 import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from "react";
 
+const revealCallbacks = new WeakMap<Element, () => void>();
+let revealObserver: IntersectionObserver | null = null;
+
+function getRevealObserver() {
+  if (!revealObserver) {
+    revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          revealCallbacks.get(entry.target)?.();
+          revealCallbacks.delete(entry.target);
+          revealObserver?.unobserve(entry.target);
+        });
+      },
+      { rootMargin: "0px 0px -12% 0px", threshold: 0.18 }
+    );
+  }
+
+  return revealObserver;
+}
+
 type RevealProps = {
   children: ReactNode;
   className?: string;
@@ -24,18 +45,13 @@ export function Reveal({ children, className = "", delay = 0, as = "div" }: Reve
       return () => cancelAnimationFrame(frame);
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "0px 0px -12% 0px", threshold: 0.18 }
-    );
-
+    const observer = getRevealObserver();
+    revealCallbacks.set(node, () => setVisible(true));
     observer.observe(node);
-    return () => observer.disconnect();
+    return () => {
+      revealCallbacks.delete(node);
+      observer.unobserve(node);
+    };
   }, []);
 
   return (
